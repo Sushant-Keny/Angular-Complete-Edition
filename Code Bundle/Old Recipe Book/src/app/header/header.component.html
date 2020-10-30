@@ -1,0 +1,29 @@
+<nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+  <a href="#" class="navbar-brand">Recipe Book</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="1" (click)="onSelect('recipeList')">Recipes</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"  id="2" (click)="onSelect('shoppingList')">Shopping List</a>
+      </li>
+    </ul>
+
+    <div class="nav-item dropdown ml-auto">
+      <a class="nav-link dropdown-toggle" href="#" id="manage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Manage
+      </a>
+      <div class="dropdown-menu" aria-labelledby="manage">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+      </div>
+    </div>
+  </div>
+</nav>

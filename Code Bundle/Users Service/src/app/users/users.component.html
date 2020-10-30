@@ -1,0 +1,17 @@
+<section class="col-12">
+  <h1 class="display-3">Users</h1>
+  <div class="row">
+    <section class="col-12 active-user">
+      <h2 class="display-4">Active Users</h2>
+      <div class="card-deck">
+        <app-active-user [user]="user" *ngFor="let user of activeUsers"></app-active-user>
+      </div>
+    </section>
+    <section class="col-12 inactive-user">
+      <h2 class="display-4">In-Active Users</h2>
+      <div class="card-deck">
+        <app-inactive-user [user]="user" *ngFor="let user of inActiveUsers"></app-inactive-user>
+      </div>
+    </section>
+  </div>
+</section>

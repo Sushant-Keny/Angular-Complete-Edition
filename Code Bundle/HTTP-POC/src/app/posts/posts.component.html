@@ -1,0 +1,111 @@
+<section class="section-posts">
+  <div class="row" *ngIf="error">
+    <div class="alert alert-danger" role="alert">
+      <h4>Error Occured</h4>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-4">Posts</h1>
+      <hr>
+    </div>
+    <div class="col-12">
+      <div class="row">
+        <section class="section-create-post col-12">
+          <div class="col-12">
+            <h2 class="display-4">Create Post</h2>
+          </div>
+          <div class="col-12">
+            <form (ngSubmit)="onSendPost(sendPostForm.value)" #sendPostForm="ngForm">
+              <div class="form-group">
+                <label for="title">Title</label>
+                <span
+                  *ngIf="title.invalid && title.touched && title.errors.required"
+                  class="text-danger span-validation">
+                  Title is required
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  autocomplete="off"
+                  placeholder="Title"
+                  ngModel
+                  name="title"
+                  #title="ngModel"
+                  required>
+              </div>
+              <div class="form-group">
+                <label for="content">Content</label>
+                <span
+                  *ngIf="content.invalid && content.touched && content.errors.required"
+                  class="text-danger span-validation">
+                  Content is required
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="content"
+                  autocomplete="off"
+                  placeholder="Content"
+                  ngModel
+                  name="content"
+                  #content="ngModel"
+                  required>
+              </div>
+              <button
+                [disabled]="sendPostForm.invalid"
+                type="submit"
+                class="btn btn-primary">
+                Send Post
+              </button>
+            </form>
+          </div>
+        </section>
+        <div class="col-12">
+          <hr>
+        </div>
+        <div class="col-12">
+          <section class="post-list">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="display-4">Post List</h2>
+              </div>
+              <div class="col-12">
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  (click)="onFetchPosts()">
+                  Fetch Posts
+                </button>
+                <button
+                  class="btn btn-danger"
+                  type="button"
+                  (click)="onDeletePosts()">
+                  Clear Posts
+                </button>
+              </div>
+              <div class="col-12 post-list-content">
+                <p
+                  *ngIf="!loadedPosts.length && !isFetching && !error"
+                  class="lead post-help-text">
+                  No posts available!
+                </p>
+                <ul class="list-group" *ngIf="loadedPosts.length && !isFetching && !error">
+                  <li class="list-group-item" *ngFor="let post of loadedPosts">
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.content }}</p>
+                  </li>
+                </ul>
+                <div class="spinner-border" role="status" *ngIf="isFetching && !error">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

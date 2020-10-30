@@ -1,0 +1,3 @@
+<h4 class="display-4" [ngStyle]="{ color: getSeverStatusColor() }" [ngClass]="{ running: serverStatus === 'running' }">
+	Cluster {{ serverId }} is {{ getServerStatus() }}
+</h4>

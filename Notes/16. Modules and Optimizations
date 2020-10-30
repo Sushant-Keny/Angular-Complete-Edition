@@ -1,0 +1,78 @@
+Modules and Optimizations
+=========================
+
+Introduction
+-------------
+- Learn about modules and optimizations to improve performance
+- Making our application ready for deployment
+
+
+What are modules?
+-----------------
+- Every Angular application need atleast one module
+- Module wraps all the building blocks of your Angular application like
+  i. Components
+  ii. Directives
+  iii. Services
+  iv. Pipes
+  v. Guards
+  vi. Interceptors
+  vii. Other Modules
+  .
+  .
+  And many more
+- Angular analyzes your NgModule to understand the application and it's features
+- Core Angular features are included in Angular modules like FormsModule, ReactiveFormsModule and many more
+- You can't use any feature/component/service in the Angular without importing it into the Angular module
+
+
+Lazy Loading
+------------
+- Lazy loading is the feature provided by Angular to load the modules only when they're required
+- For example we have multiple features and multiple modules assigned to that features
+- Whenever User navigates to any route which is related to a feature only that time the feature module should be loaded
+- Hence the browser will download less code making the rendering fast
+- Without lazy loading all the modules are loaded when we visit the application
+
+
+How to implement lazy loading for any module?
+---------------------------------------------
+- Select the feature which is to be loaded seperately
+- Create a new module for that feature and load all the declarations, imports and exports
+- Create a new routing module for the feature and in imports of Routing add Routing.forChildren(routes) instead of Routing.forRoot(routes)
+- Now wire up this module with the root module i.e. AppModule by add this to it's imports
+- Now in the AppRoutingModule add the routes for feature e.g. recipes
+
+const appRoutes: Routes = [
+  {
+    path: 'recipes',
+    loadChildren: () => import('./recipes/recipes.module').then(value => value.RecipesModule)
+  },
+  { path: '**', redirectTo: '/recipes' },
+];
+
+Routes[xxx].loadChildren will take a path of the module as the value to load it lazily using import function
+
+Now the RecipeModule will only get loaded once the recipes routes is accessed
+
+Important Notes:
+- Once you load a module lazily then remove the imports from the AppModule, imports in the AppModule tells Angular to load a module eagerly
+- You can only declare Component/Directive/Pipe once in any module, you cannot declare it in multiple modules
+- Donot optimize and lazy load the module which is always used otherwise it will create more delay
+
+
+Pre-lazy Loading
+----------------
+- Pre-lazy Loading is a strategy which help us tell how our modules should be loaded
+- When we add
+
+  @NgModule({
+    imports: [
+      RouterModule.forRoot(appRoutes, { preloadingStrategy: PreloadAllModules })
+    ],
+    exports: [RouterModule]
+  })
+  export class AppRouterModule { }
+
+  The preloadingStrategy property tells the Angular to load all the modules in chunks but in the background so there won't be any delay
+  So when we go to any route, the other modules would be downloaded in the background and then they would get loaded easily and in chunks

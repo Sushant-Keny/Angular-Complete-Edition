@@ -1,0 +1,213 @@
+Authentication
+==============
+
+Introduction
+------------
+- Angular application decouples the frontend from the Server
+- Frontend and backend would be a complete seperate projects
+- So they communicate via. REST API
+- Previously we used to start the session of the User once he logs in and it would be maintained on the backend side and once the session expires the User had to login again
+- Now as the frontend and backend are decoupled from each other then the session won't work
+- Hence token based authentication came to solve this issue
+- We can send the user credentials from the Angular application to the REST API Server and Server will return a token
+- That token would have some expiry date, so whenever the token is returned that token must be used to access all the other APIs
+- Angular stores the token in the local storage and then uses it
+
+
+Steps to achieve the authentication and state management
+--------------------------------------------------------
+- Create a login and sign-up UIs
+- Login/Sign-Up would send the user credentials with the API key to the Server
+- Server will return the token
+- So create AuthComponent and add sign-in and sign-up functionality in it
+- Auth Component will use AuthService
+- AuthService should have methods like sign-in and sign-up
+- Add the validation to the forms
+- Request the APIs accordingly
+- signUp/signIn method of AuthComponent will use AuthService's signIn/signUp method respectively
+- Use catchError operator and throwError method provided by rxjs to do the error handling
+- Error handling should be done in the service only
+- If it gets any error then it should catch the error using catchError(err: HttpErrorResponse) operator and use throwError() method to throw it
+- Maintain error variable in the component and assign the variable an error message if any error occurs and once we submit again make the error to null
+- In this way you can use *ngIf and bootstrap alert to display the error
+- Once we successfully log in we get the user and token
+- Create a User Model with private fields idToken and tokenExpirationDate and create a getter for token and return it if and only if the token's expiry is greater than current time
+- In this way we can check if the token is present in UserModel then User is authenticated
+- To share the User's state all over the application we create a BehaviourSubject<User> of type User and once we log in we emit the User in it
+- We use BehaviourSubject so that we can use it anywhere we want to
+- Now we can change the navigation menu based on user in AuthService
+
+  Example:
+
+  this.authService.user
+    .pipe(
+      take(1),
+      tap((user: User) => {
+        if (user.token) {
+          this.isAuthenticated = true;
+        }
+      })
+    );
+
+  And change the menu of navigation based in isAuthenticated flag
+
+- Now we have to use the token in all the other requests
+- Hence we would like to create an AuthInterceptor
+
+  So create an AuthInterceptor
+
+  @Injectable()
+  export class AuthInterceptor implements HttpInterceptor {
+    intercept(req: HttpRequest<any>, next: HttpHandler) {
+    }
+  }
+
+  Now let's import the AuthService to get the User
+
+  @Injectable()
+  export class AuthInterceptor implements HttpInterceptor {
+
+    constructor(private readonly authService: AuthService) {  }
+
+    intercept(req: HttpRequest<any>, next: HttpHandler) {
+      // Now intercept method must return an Observable of type HttpEvent<any>
+      // And we have to use the AuthService's User which is an Observable of type User so to return the Observable it won't be possible
+      // because we have to use next.handle(req) inside the User's subscription callback
+      // Hence we have to transform the control of the observable to next.handle() after getting the User details
+      // So we can use exhaustMap operator for this
+
+      const obserevable = this.authService.user.pipe(
+        take(1), // To take the last emitted User and unsubscribe it
+        exhaustMap((user: User) => {
+          const isAuthenticated = !!user;
+          
+          if(!isAuthenticated) {
+            return next.handle(req);
+          }
+
+          const modifiedRequest = req.clone({
+            params: new HttpParams().set('auth', user.token)
+          });
+
+          return next.handle(modifiedRequest);
+        })
+      );
+
+      return obserevable;
+    }
+  }
+
+- Now register the AuthInterceptorService in providers of AppModule
+
+  providers: [
+    .
+    .
+    .
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInerceptor }
+  ]
+
+- There is one problem, right now the User is stored in a BehaviourSubject and it's eventually in a memory
+- So whenever we restart the page the User would be gone
+- Hence we need to persist this somewhere
+- We can use browser cookies, localstorage etc
+- So let's store the User in a localstorage
+
+  private handleAuthentication(id: string, email: string, token: string, expiresIn: number) {
+    const tokenExpirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    const user = new User(id, email, token, tokenExpirationDate);
+    this.user.next(user);
+    localStorage.setItem('userData', JSON.stringify(user));
+  }
+
+- Now the token is successfully stored in the localstorage once the User logs in
+- But still whenever we refresh the page our Subject would still be empty as we have used Subject everywhere
+- Hence we need to create AutoLogin method which checks the User in the local storage on AppComponent OnInit hook and emit it in the User Subject
+- Let's add AutoLogin mechanism
+
+  autoLogin() {
+    const userData: {
+      id: string,
+      email: string,
+      idToken: string,
+      tokenExpirationDate: string
+    } = JSON.parse(localStorage.getItem('userData'));
+
+    if (!userData) {
+      return this.router.navigate(['/auth']);
+    }
+
+    const user = new User(userData.id, userData.email, userData.idToken, new Date(userData.tokenExpirationDate));
+
+    if (user.token) {
+      this.user.next(user);
+    }
+  }
+
+  Inject AuthService in AppComponent and OnInit call autoLogin
+
+  Now we should also write a mechanism to auto logout after the token expiry
+
+  autoLogout(expiresIn: number) {
+    this.tokenExpiryTimer = setTimeout(() => {
+      this.signOut();
+    }, expiresIn);
+  }
+
+
+  Now we can call autoLogout method and pass the expiresIn miliseconds to it so that it would remove automatically signOut
+
+  signOut() {
+    localStorage.removeItem('userData');
+    this.user.next(null);
+    clearTimeout(this.tokenExpiryTimer);
+    this.tokenExpiryTimer = null;
+    this.loadingSpinnerService.load.next({ loading: true });
+    setTimeout(() => {
+      this.loadingSpinnerService.load.next({ loading: false });
+      this.router.navigate(['/auth']);
+    }, 500);
+  }
+
+  Now call autoLogout in AutoLogin after User emition and in login
+
+  Now even if we refresh we get the token
+
+  Now last part we have to do is AuthGuard to Guard other routes
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class AuthGuardService implements CanActivate {
+
+    constructor(
+      private readonly authService: AuthService,
+      private readonly router: Router
+    ) {  }
+
+    canActivate(
+      route: ActivatedRouteSnapshot,
+      state: RouterStateSnapshot
+    ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+      return this.authService.user.pipe(
+        take(1),
+        map((user) => {
+          const isAuthenticated = !!user;
+
+          if (isAuthenticated) {
+            return true;
+          }
+
+          return this.router.createUrlTree(['/auth']);
+        })
+      );
+    }
+
+  }
+
+  If the canActivate method gets true then it's successful if false means the User is not Authenticated and must be redirected to Auth page
+  So in this case we can inject the router and redirect the User or use URLTree which is specially made for redirection
+  Now add the guard in canActivate property and that's it for the routing
+
+
+
+

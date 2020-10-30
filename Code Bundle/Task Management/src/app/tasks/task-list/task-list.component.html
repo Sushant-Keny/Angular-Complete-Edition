@@ -1,0 +1,9 @@
+<div class="list-group">
+  <a
+    routerLinkActive="active"
+    [routerLink]="[task.id]"
+    class="list-group-item list-group-item-action"
+    *ngFor="let task of tasks">
+    {{ task.name }}
+  </a>
+</div>

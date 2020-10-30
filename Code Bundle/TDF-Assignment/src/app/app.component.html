@@ -1,0 +1,67 @@
+<div id="container" class="container">
+  <div class="row">
+    <div class="col-12">
+      <form (ngSubmit)="onSubmit()" #formData="ngForm">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <span class="span-validation-error" *ngIf="email.invalid && !email.untouched">
+            Valid email address is required
+          </span>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            placeholder="name@example.com"
+            autocomplete="off"
+            ngModel
+            #email="ngModel"
+            name="email"
+            required
+            email>
+        </div>
+        <div class="form-group">
+          <label for="subscription">Subscription</label>
+          <select
+            class="form-control"
+            id="subscription"
+            [ngModel]="defaultSubscription"
+            name="subscription">
+            <option
+              *ngFor="let subscription of subscriptions"
+              [value]="subscription">
+              {{ subscription }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <span class="span-validation-error" *ngIf="password.invalid && !password.untouched">
+            Password is required
+          </span>
+          <input
+            type="password"
+            placeholder="Password"
+            class="form-control"
+            id="password"
+            #password="ngModel"
+            ngModel
+            name="password"
+            required>
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="formData.invalid">Submit</button>
+      </form>
+    </div>
+    <div class="col-12" *ngIf="submitted">
+      <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-4">Summary</h1>
+          <p class="lead">
+            Email: {{ user.email }} <br>
+            Subscription: {{ user.subscription }} <br>
+            Password: {{ user.password }} <br>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

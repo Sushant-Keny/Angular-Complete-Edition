@@ -1,0 +1,35 @@
+<section class="row">
+  <div class="col-12">
+    <h1 class="display-4">Login</h1>
+  </div>
+  <div class="col-12">
+    <form>
+      <div class="form-group">
+        <label for="userName">User Name</label>
+        <input 
+          type="text"
+          class="form-control"
+          [(ngModel)]="userName"
+          id="userName"
+          name="userName"
+          autocomplete="off"
+          aria-describedby="Username"
+          required>
+        <small id="emailHelp" class="form-text text-muted">We'll never share your username/email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          autocomplete="off"
+          [(ngModel)]="password"
+          class="form-control"
+          name="password"
+          required>
+      </div>
+      <button type="submit" class="btn btn-primary" (click)="onSubmit()">Submit</button>
+    </form>
+    <span class="text-danger" *ngIf="invalidCredentials">Invalid Credentials</span>
+  </div>
+</section>

@@ -1,0 +1,388 @@
+Angular Routing
+===============
+
+Introduction
+------------
+- User experience of different page
+- Achieved using Angular router
+- Passing the important data between components - QueryParams, Params, Fragment, Data
+- Rendering different components based on routes
+- Application will be still the SPA but many parts of DOM would be changed by the routing
+
+
+Why do we need a router?
+------------------------
+- User Experience
+
+
+How to create the routes for our SPA?
+-------------------------------------
+- Create routes array with path and component object
+- Register it through RouterModule.forRoot(appRoutes)
+- Use <router-outlet> for placeholder
+- Use routerLink for navigation instead of href
+- For adding the active class to the navigation link use routerLinkActive="<<class-name>>"
+- We have to add this option to the home link [routerLinkActiveOptions]="{ exact: true }" so that it won't get highlighted when we route to any other route because routerLinkActive activates if that route is present in the current route
+
+
+How to route programmatically?
+------------------------------
+- Inject the router in your typescript file
+- Absolute Path: router.navigate(['/servers']);
+- Relative Path: router.navigate(['servers]); // Router link understands the component on which it seats on not the router
+
+Whenever we set the relative path it always appends the path in the router-link to the end of your current path
+
+Suppose we are on a component which is rendered through routing and inside a component we have another router link anchor and we try to use the relative path it will append that path to the current path
+
+Suppose you wanna use relative path programmatically without the router link and just use router.navigate then you have to specify one more option for relation 
+i.e. router.navigate('server', { relativeTo: this.route }) // this.route: ActivatedRoute
+
+
+Dynamic routes
+--------------
+- Similar to Express.js params
+- E.g. 
+  const appRoutes: Routes = [
+    { path: 'users', UsersComponent },
+    { path: 'users/:id', UserComponent }
+  ];
+
+
+Fetching route params
+---------------------
+- Inject ActivatedRoute in the typescript of the component which is to be loaded on hitting the route
+- Use: this.route.snapshot.params['id']
+
+
+Creating a dynamic route link in the component's html
+-----------------------------------------------------
+- So when we try to reload the same component with different params using routerLink inside that component it will change the route but the component won't be created again because Angular recognizes that we are asking him to reload the same component which we're currently on, so, he doesn't create the same component again because that would affect the performance
+- So the problem is you won't be able to access the new params dynamically from the same component as the component won't be re-instantiated
+
+E.g. user.component.html route - /users/:id/:name - /users/1/John
+
+<a [routerLink]="['/users', 10, Anna]">Anna(10)</a>
+
+This will not create the component again because we're requesting for the same component inside that component
+
+So to accept the params in this case we have to use observables which observes the params changes and trigger an event
+
+So we can change the parameters using route.params in the typescript file
+
+E.g. 
+  this.paramsSubscription = router.params.subscribe((params) => {
+    this.user.id = params['id'];
+    this.user.name = params['name'];
+  });
+
+This is called reactive programming
+
+
+An important note about Route observables
+-----------------------------------------
+So normally observables are not directly tied up with Component, so whenever a component is deleted the observables are still subscribed in the memory. Although Angular unsubscribe them intelligently on his own, but it is a good practice to unsubscribe the observable after destroying the component.
+
+E.g.
+
+ngOnDestroy() {
+  this.paramsSubscription.unsubscribe();
+}
+
+
+Passing query parameters and fragments
+---------------------------------------
+- When we use the directive routerLink we get two input properties of that directive named queryParams and fragment
+- queryParams: Object & fragment: string
+- When we try to access them from ActivatedRoute we get it from route.snapshot.queryParams & route.snapshot.fragment
+- Both are observables so we can subscribe them to get the changes if we happen to change the route from the same component
+
+
+Setting up child routes
+-----------------------
+- Whenever we want to create nested routes i.e. Routing inside a component rendered through a route
+- Example, we have User Component and we want to render Edit User Component inside the User Component through routing then there are two steps
+
+1. Add children in User Routes
+
+const appRoutes = [
+  {
+    path: 'user',
+    component: UserComponent,
+    children: [
+      { path: ':id/edit', component: EditUserComponent }
+    ]
+  }
+];
+
+2. Add the <router-outlet> in the User Component where you wanna render the Edit User Component, like this
+
+<section class="row">
+  <div class="col-12">
+    <h1 class="display-4">Users</h1>
+  </div>
+  
+  <div class="col-6">
+    <div class="list-group">
+      <a
+        [routerLink]="[user.id, user.name]"
+        class="list-group-item list-group-item-action"
+        *ngFor="let user of users">
+        {{ user.name }}
+      </a>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <router-outlet></router-outlet>
+  </div>
+</section>
+
+
+So all the child route components will always be rendered inside the router outlet of that component
+
+
+Preserve query parameters to the next route
+-------------------------------------------
+- Add queryParamsHandling: 'preserve' property in router.navigate options
+
+
+Route Redirection
+-----------------
+- Redirect the route using redirectTo: '<<absolute_path>>'
+- Whenever you wanna add Page Not Found route add:
+
+  { path: '**', redirectTo: '/not-found' }
+
+  At the end of the routes, this is called wildcard
+
+
+Modularize the routes
+---------------------
+- Create the AppRouterModule with ngModule decorator
+- Add imports property in ngModule decorator with all the app routes present in the app module using original RouterModule.forRoot(appRoutes)
+- Add exports property in ngModule decorator and export RouterModule
+- Import the AppRouterModule in AppModule
+
+
+Route Guard - Auth Guard
+------------------------
+- Check if the user is logged in to access particular routes
+- Logic to be executed before routing to new route or after routing from an old route
+- CanActivate, CanActivateChildren, CanDeactivate comes to the rescue
+- Steps to create the Route Guard for login
+
+1. Create a service named auth-guard.service.ts
+
+export class AuthGuard implements CanActivate {}
+
+2. Implement the method canActivate in AuthGuard, this method either returns boolean/Promise<boolean>/Observable<boolean>
+
+3. canActivate method takes two parameters ActivatedRouteSnapshot & RouterStateSnapshot
+
+4. Create an AuthService which should have three methods login, isAuthentic & logout
+
+5. Inject AuthService in AuthGuard and check if the user is authentic using isAuthentic method and return true if authentic
+
+6. If the method says user is not authentic then it should navigate to some other route using router: Router, which we get by injecting it into AuthGuard
+
+7. Now our AuthGuard is ready to be used, specify AuthGuard and AuthService in our providers of AppModule
+
+8. Inside the routes we can add one more option named canActivate which takes array of AuthGuards as the parameter, so use it like this:
+   
+   {
+    path: 'servers',
+    canActivate: [AuthGuard],
+    component: ServersComponent,
+    children: [
+      { path: ':id', component: ServerComponent },
+      { path: ':id/edit', component: EditServerComponent }
+    ]
+  }
+
+  This will add guard to all the server routes & it's children
+
+9. If you just want to add the routes to the children and not to the parent then you can add it one by one in the child routes, but there is one better way
+
+10. Implement CanActivateChildren interface in AuthGuard and use same logic as of CanActivate and instead of canActivate: [AuthGuard] use canActivateChildren: [AuthGuard] in the parent route
+
+   Like this:
+
+  {
+    path: 'servers',
+    canActivateChildren: [AuthGuard],
+    component: ServersComponent,
+    children: [
+      { path: ':id', component: ServerComponent },
+      { path: ':id/edit', component: EditServerComponent }
+    ]
+  }
+
+
+What if you want to control or prevent the user to leave a route? For e.g. He/She has filled the details in product checkout and tried to navigate using arrow buttons or anything else without submitting the details?
+
+Or how can we prevent the user to accidentally navigating away?
+
+In this scenario you might want to prevent the user to navigate to somewhere else
+
+What to do?
+.
+.
+.
+.
+.
+.
+.
+.
+CanDeactivate comes to rescue!
+
+The problem here is your component will only know when to prevent and when should it allow the user to navigate
+And your Route Guard will have the capability to let the user move from one route to other route
+So somehow Route Guard must have access to the Component's data so that it will come to know that it should allow it to navigate or not
+
+So first create a contract between RouteGuard and Component
+
+export interface ICanDeactivateComponent {
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+}
+
+Now both of them must sign the contract i.e. Implement the interface CanDeactivate of type of our contract ICanDeactivateComponent
+
+export class CanDeactivateGuard implements CanDeactivate<ICanDeactivateComponent> {
+  canDeactivate(
+    component: ICanDeactivateComponent,
+    route: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    return component.canDeactivate();
+  }
+}
+
+Now this guard is ready to use component inside it, and Angular router will allow him to use component
+
+So let's add this Guard to our routes
+
+{
+  path: 'servers',
+  canActivateChild: [AuthGuard],
+  component: ServersComponent,
+  children: [
+    { path: ':id', component: ServerComponent },
+    { path: ':id/edit', component: EditServerComponent, canDeactivate: [CanDeactivateGuard] }
+  ]
+}
+
+Now add this guard to providers in AppModule
+
+providers: [
+  .
+  .
+  .
+  CanDeactivateGuard
+]
+
+Now Angular router will be able to pass component to the CanDeactivateGuard as CanDeactivateGuard has signed the contract
+
+Now let's make component sign the contract and implement ICanDeactivateComponent interface
+
+export class EditServerComponent implements OnInit, ICanComponentDeactivate {
+  .
+  .
+  .
+}
+
+Implement canDeactivate method
+
+export class EditServerComponent implements OnInit, ICanComponentDeactivate {
+  canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
+    if (!this.allowEdit) {
+      return true; // If it returns true then it will be able to route away, if return false then user will be able to deactivate the route i.e. go away
+    }
+
+    if (!this.changesSaved) {
+      return confirm('Do you want to discard the changes?'); // If user clicks on ok then confirm will return true else false
+    } else {
+      return true;
+    }
+  }
+}
+
+Now our CanDeactivate route would be ready to use
+
+We can also pass data through route.
+
+Go to appRoutes: Routes = [
+  { path: 'not-found', component: ErrorComponent, data: { message: 'Page Not Found' }}
+];
+
+Use this data using route: ActivatedRoute:
+
+const errorMessage =  route.snapshot.data['message];
+
+
+Resolver
+--------
+- Resolver is used for pre-loading the data for the component asynchronously, although it can also be done using ngOnInit()
+- For e.g. When you load list by using HTTP Server or a Product details you get from HTTP Request
+- So instead of getting the data in ngOnInit() and using the service, we can use resolver
+- Resolver sits on routes like a Guard
+
+Steps to create the Resolver
+----------------------------
+1. Create the Resolver for particular Component. Let's say UserComponent
+
+export class UserResolver implements Resolve<User> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    // Get the user through http service
+  }
+}
+
+2. Inject the service to be used in UserResolver
+
+@Injectable()
+export class UserResolver implements Resolve<User> {
+  constructor(private readonly userService: UserService) {}
+
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    return this.userService.getUser(route.params['id']);
+  }
+}
+
+3. Add the UserResolver in the AppModule
+
+providers: [
+  .
+  .
+  .
+  .
+  UserResolver
+]
+
+4. Add the UserResolver to the UserComponent Route
+
+const appRoutes: Routes = [
+  { path: 'users/:id', component: UserComponent, resolve: { user: UserResolver } }
+];
+
+5. Use the data in the UserComponent
+
+export class UserComponent implements OnInit {
+  user: User;
+  constructor(private readonly route: ActivatedRoute) { }
+
+  ngOnInit() {
+    this.user = this.route.snapshot.data['user']; // User inside the data is the user we specified in resolve object of route
+  }
+}
+
+
+Location Strategies
+-------------------
+- Whenever you host your Angular Application on a server, the server will have the control over routing
+- Suppose you have a route named https://<<domain>>/users, the server will search for an HTML page named users and if it doesn't get it then it will return 404
+- So normally Angular won't be having a control over the routing, but server
+- So in the development environment our development server knows how to handle the Angular Routes because it's configured in that way, but your production server won't be configured in the way to use Angular Application
+- So we use useHash in RouterModule.forRoot(appRoutes, { useHash: true });
+- This adds the # after the domain name e.g. https://<<domain>>/#/users
+- UseHash also configures the production server that be concerned about the URL before # and let angular handle the URL after # so that Angular Router would do his work as expected

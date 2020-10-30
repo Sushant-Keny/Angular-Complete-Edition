@@ -1,0 +1,13 @@
+<div class="card" style="max-width: 18rem;">
+  <div class="card-header">
+    <ul class="nav nav-pills card-header-pills text-center">
+      <li class="nav-item">
+        <button class="nav-link btn btn-success"(click)="activateUser()">Activate</button>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ user.firstName }} {{ user.lastName }}</h5>
+    <p class="card-text">Activation Status: {{ user.status }}</p>
+  </div>
+</div>

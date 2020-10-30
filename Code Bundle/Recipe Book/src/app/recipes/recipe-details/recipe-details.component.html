@@ -1,0 +1,42 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <h2 class="display-4 text-center">Recipe Details</h2>
+    </div>
+    <div class="col-12">
+      <div class="card" [ngStyle]="{ 'display': !recipe ? 'none' : 'inherit' }">
+        <img
+          [src]="recipe.imageUrl"
+          class="card-img-top">
+        <div class="card-body">
+          <h2 class="card-title card-content">{{ recipe.name }}</h2>
+          <span class="card-subtitle text-muted card-content">{{ recipe.tagline }}</span>
+          <p class="card-text card-content">
+            {{ recipe.description }}
+          </p>
+          <ul class="ingredients">
+            <li *ngFor="let ingredient of recipe.ingredients">
+              {{ ingredient.name }} - {{ ingredient.amount }}
+            </li>
+          </ul>
+          <div class="dropdown">
+            <button 
+              class="btn btn-success dropdown-toggle"
+              type="button" id="manageRecipe"
+              data-toggle="dropdown"
+              appDropdown
+              aria-haspopup="true"
+              aria-expanded="false">
+              Manage Recipe
+            </button>
+            <div class="dropdown-menu manage-recipe-ddl" aria-labelledby="manageRecipe">
+              <a class="dropdown-item"(click)="onToShoppingList()">To Shopping List</a>
+              <a class="dropdown-item" [routerLink]="['edit']">Edit Recipe</a>
+              <a class="dropdown-item" (click)="onDeleteRecipe(recipe.id)">Delete Recipe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+<div class="card text-center">
+  <div class="card-header">
+    <ul class="nav nav-pills card-header-pills">
+      <li class="nav-item">
+        <button
+          class="btn btn-primary"
+          (click)="onSetTo('Active')">
+          Active
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="btn btn-danger"
+          (click)="onSetTo('In-Active')">
+          In-Active
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="btn btn-warning"
+          (click)="onSetTo('Unknown')">
+          Unknown
+        </button>
+      </li>
+    </ul>
+    <button class="btn btn-danger" (click)="onDeleteAccount()">Delete</button>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ account.accountName }}</h5>
+    <p class="card-text">Account Status: {{ account.accountStatus }}</p>
+  </div>
+</div>

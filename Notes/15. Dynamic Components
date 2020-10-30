@@ -1,0 +1,69 @@
+Dynamic Components
+==================
+
+Introduction
+------------
+- Dynamic components are created at runtime
+- They are created programatically
+- Example: You wanna show an overlay on any action at that time you can create an overlay dynamically/programatically
+
+
+Adding an Alert Modal dynamically
+---------------------------------
+- Create an Alert Component
+- Alert Component will have an input property where the data can be passed to it
+- Use the Alert Component wherever you want
+
+
+What are dynamic components?
+----------------------------
+- Components that loads dynamically
+- It only gets rendered when something happens
+- It's loaded programatically
+- There are two ways to use dynamic components in Angular
+  i. *ngIf
+    - Declarative approach - Components embedded via. selector
+    - *ngIf controls whether the component should be added to DOM or not
+  ii. Dynamic component loader
+    - Components are created and added to the DOM programatically
+    - Component is managed and added by the developer
+    - Everything *ngIf does is done by the developer in this approach
+
+
+How to create components using Dynamic components loader?
+---------------------------------------------------------
+- Inject ComponentFactoryResolver in your component in which dynamic component is to be created
+- Create component factory:
+
+  const factory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+
+- Now create a directive with public property ViewContainerRef which is used for creating a component
+- Use ng-template where the component is to be placed
+
+  <ng-template></ng-template>
+
+- Add the placeholder directive in it
+
+  <ng-template appPlaceholder></ng-template>
+
+- Get the element in component where the dynamic component is to be created
+
+  @ViewChild(PlaceHolderDirective, { static: false }) alertHost: PlaceHolderDirective;
+
+- Now use this to create the component
+
+
+  private showError(message: string) {
+    const alertComponentFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    this.alertHost.viewContainerRef.clear(); // Clear the ViewContainer if it has anything
+    const component = this.alertHost.viewContainerRef.createComponent(alertComponentFactory);
+    component.instance.message = message; // Data binding to Alert @Input property
+
+    this.subscription = component.instance.close.subscribe(() => { // Event listening to @Output property of AlertComponent
+      this.alertHost.viewContainerRef.clear(); // Clear the ViewContainer if it has anything on close button click
+      this.subscription.unsubscribe();
+    });
+  }
+
+
+Resources: https://angular.io/guide/dynamic-component-loader

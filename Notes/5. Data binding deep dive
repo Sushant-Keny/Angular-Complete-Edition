@@ -1,0 +1,114 @@
+Components and Data binding Deep Dive
+-------------------------------------
+
+Read: Angular - Components communication from Microsoft OneNote - https://rb.gy/0obikx
+
+
+View Encapsulation
+------------------
+- Each styles in the component are only applied to that component
+- We cannot apply styles of different components to different components
+- This is because of view encapsulation feature of Angular
+- Angular uses the attribute and then the styles are applied using that attribute after bundling p[<<angular_attribute>>] { <<styles>> }
+
+
+Local References
+----------------
+- Whenever we want to bind the data from template to typescript we use two-way binding
+- We can also use local references
+
+E.g. Suppose you want a text of input to typescript
+
+Using two-way binding
+---------------------
+
+Template:
+
+<input type="text" name="title" [(ngModel)]="title">
+<button (click)="onCreateTask()">Create Task</button>
+
+Typescript:
+
+onCreateTask() {
+  this.tasks.push({ title: this.title });
+}
+
+Using local referencing
+-----------------------
+
+Template:
+
+<input type="text" name="title" #inputTitle>
+<button (click)="onCreateTask(inputTitle)">Create Task</button>
+
+Typescript:
+
+onCreateTask(title: HtmlInputElement) {
+  this.tasks.push({ title: title.value });
+}
+
+
+@ViewChild
+----------
+- Local references can directly be referenced inside typescript using ViewChild decorator against a variable
+- Example: @ViewChild('serverName', { static: true }) serverName: ElementRef 
+- Syntax: @ViewChild('<<local_reference_name>>', { static: true }) <<variable_name>>: ElementRef
+
+
+ngContent
+---------
+- Whenever you want to pass HTML from component to other component
+- Add that HTML inside the component
+
+<app-child>
+  <h1>HTML to be passed</h1>
+</app-child>
+
+In the app-child.component.html
+
+You can access this HTML using <ng-content></ng-content>
+
+We can also get the local reference of the ngContent using @ContentChild()
+
+Life Cycle Hooks of Angular
+---------------------------
+- Whenever a component is created by Angular i.e. Whenever the Angular founds the selector used somewhere it creates the component to be rendered on the front end
+- Angular goes through some lifecycles while doing this
+- It provides us multiple hooks of the lifecycle where we can execute some code on particular lifecycle phase
+
+- Phases
+  ======
+  i. ngOnChanges
+  * This hook is called multiple times
+  * It is called when the component is created
+  * It's also called when an @Input property's value is changed
+
+  ii. ngOnInit
+  * This method gets executed when the component is initialized
+  * The component won't be displayed yet
+  * Properties can be accessed and initialized in this phase
+  * The component is not added to the DOM yet, but you can say that the component's object is instantiated by the Angular
+  * Hence it's called after the constructor
+
+  iii. ngDoCheck
+  * It will also run multiple times, actually this method will be executed a lot
+  * This will run whenever change detection runs
+  * Change detection is the system which runs whenever something in the template is changed, it can be any property value or text
+  * In this kind of changes the Angular will have to re-render this template on the DOM and then this hook will be called as there will be change in the DOM
+  * This hook will be called on every check. On any event, change every time the change detection runs
+
+  iv. ngAfterContentInit
+  * This is called whenever a content is projected via. ng-content
+  * So the view won't be seen yet, but you can say that the view of the parent component is rendered
+  
+  v. ngAfterContentChecked
+  * Executed whenever change detection checks the content projected into the child component's template
+  
+  vi. ngAfterViewInit
+  * After the view is rendered
+
+  vii. ngAfterViewChecked
+  * Executed when the change detection checks the changes after the view is rendered
+
+  viii. ngOnDestroy
+  * Used for clean-up work

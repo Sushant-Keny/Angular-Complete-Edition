@@ -1,0 +1,29 @@
+<app-server *ngFor="let server of servers"></app-server>
+
+<div class="col-xl-12 div-create-server">
+	<div class="form-group">
+		<!--One Way Binding-->
+		<!-- <label for="serverName" class="sr-only">Server Name</label> -->
+		<!-- <input type="text" class="form-control col-xl-6" id="serverName" placeholder="Server Name" (input)="onUpdateServerName($event)"> -->
+
+		<!--Two Way Binding-->
+		<input type="text" class="form-control" id="serverName" placeholder="Server Name" [(ngModel)]="serverName">
+	</div>
+	<button type="button" class="btn btn-primary btn-new-server" [disabled]="!createServer" (click)="onCreateServer()">
+		Add Server
+	</button>
+	<!-- Basic Example -->
+	<!-- <span class="span-server-creation-status">{{ serverCreationStatus }}</span> -->
+
+	<!-- Directive in use -->
+	<span class="span-server-creation-status" *ngIf="serverCreated else noServer">Server named {{ serverName }} is created successfully</span>
+
+	<ng-template #noServer>
+		<span class="span-server-creation-status">No Server was created</span>
+	</ng-template>
+
+	<!-- Explaination -->
+	<!-- In the above code we have used ng-template component where we specified a span
+	It simply says if the serverCreated variable returns true then show the text inside the first span
+	Otherwise show No Server was created span -->
+</div>

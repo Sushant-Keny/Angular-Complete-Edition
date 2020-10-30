@@ -1,0 +1,6 @@
+h2 { 
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+}
+
+.form-controls > button { margin-right: .5rem; }

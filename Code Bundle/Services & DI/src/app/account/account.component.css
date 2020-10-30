@@ -1,0 +1,8 @@
+.nav-item {  margin-right: 2%; }
+.card-header { display: flex; }
+
+.card-header-pills {
+  width: 100%;
+  flex-direction: row;
+  margin-right: auto !important;
+}

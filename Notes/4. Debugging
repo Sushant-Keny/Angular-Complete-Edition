@@ -1,0 +1,9 @@
+Debugging in Angular
+--------------------
+
+Debugging using source maps
+---------------------------
+- Go to developer tools > source > webpack > .
+- Here you will find your directory of the project and you can place the breakpoints anywhere you want
+
+Note: Add Augury to your chrome for getting nice details about your application

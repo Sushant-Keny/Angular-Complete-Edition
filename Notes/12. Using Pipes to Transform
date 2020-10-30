@@ -1,0 +1,120 @@
+Pipes
+=====
+
+Introduction
+------------
+- Pipes are used to transform the data in the template
+- Suppose you have a username displayed in the template using string interpolation
+
+  <p>{{ username }}</p>
+
+  Now you want to display it in the uppercase format, but it's just to display you don't wanna change the value of username in the backend
+  So there's a built in pipe provided by Angular named uppercase, it can be used in the following way:
+
+  <p>{{ username | uppercase }}</p>
+
+- In this section we'll study what are different in-build pipes and we'll also create a custom pipe
+- Pipes can also be asynchronous
+
+
+How to use Pipes?
+-----------------
+- It's used with the data binding in the template
+- It uses pipe(|) symbol
+- Example: <p>{{ username | uppercase }}</p>
+  Output: JACK
+
+  where username = 'jack';
+
+- There are many other built-in pipes
+- List:
+  1. uppercase
+  2. date
+
+
+Configuring Pipes
+-----------------
+- You can pass parameters to the pipe using : symbol
+- Example:
+
+  <p>{{ startedAt | date:'fullDate':<<second_param>> }}</p>
+
+- API Reference: https://angular.io/api?query=pipe
+
+
+Chaining Pipes
+--------------
+- You may want to use two or more pipes at a time
+- For example, you want to use pipes to format date and it should be displayed in the uppercase
+
+  <p>{{ startedAt | date:'fullDate' | uppercase }}</p>
+
+  If you use the pipes in wrong order then it might cause an error
+
+  <p>{{ startedAt | uppercase | date:'fullDate' }}</p>
+
+  Now this will cause an error, because it's not possible to transform date object to uppercase
+
+
+Creating a custom pipe
+----------------------
+- Create a class named <<pipe_name>>Pipe and implement PipeTransform interface
+- PipeTransform interface will force you to implement transform method which takes value as a parameter which would be our value on which we use our pipe against
+- Then add a decorator Pipe on the class which takes an object with name property which would be our pipe selector
+- Finally implement the logic and add it to the declarations array of the AppModule
+
+Note: You can also use CLI: ng generate pipe <<pipe_name>>
+Note: Arguments of the pipes could be received from second parameter and the third and so on
+
+Example:
+
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'shorten'
+})
+export class ShortenPipe implements PipeTransform {
+  transform(value: string, ...args: any[]) {
+    if (value.length >= args[0]) {
+      return `${value.substr(0, args[0])}...`;
+    }
+    return value;
+  }
+}
+
+Pure and impure pipes
+---------------------
+- Pipes are triggered whenever the argument of the pipe is changed
+- But pipes never trigger if the data on which pipe is applied change, this is very good behaviour created by the Angular to keep the performance intact
+- So if you want to trigger the pipe on the data change as well then make it impure that is:
+
+@Pipe({
+  name: 'shorten',
+  pure: false
+})
+export class ShortenPipe implements PipeTransform {
+  transform(value: string, ...args: any[]) {
+    .
+    .
+    .
+  }
+}
+
+
+Async pipe
+----------
+- If you wanna display the value resolved by a promise or value emitted by an Observable directly into the template then you can use async pipe
+- 'async' pipe automatically subscribes to the observable or resolve the promise and prints it once it's resolved or the data is emitted
+- Example:
+
+  app.component.ts
+
+  public status = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(EServerStatus.STABLE);
+    }, 2000);
+  });
+
+  app.component.html
+
+  <h1>Application Status: {{ status | async }}</h1>

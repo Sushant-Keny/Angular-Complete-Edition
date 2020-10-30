@@ -1,0 +1,9 @@
+<app-navbar></app-navbar>
+<div id="container" class="container">
+  <div *ngIf="activated">
+    <hr>
+      <span class="lead">Activated!</span>
+    <hr>
+  </div>
+  <router-outlet></router-outlet>
+</div>

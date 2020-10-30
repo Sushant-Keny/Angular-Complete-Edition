@@ -1,0 +1,78 @@
+What is Angular?
+----------------
+* JavaScript Framework
+* Single page applications
+* Fast - As we don't need to go to the server for getting every html page
+* A nice user experience
+* Easy to develop
+
+
+Angular Versioning
+------------------
+* Angular 1 === AngularJS
+* Angular 2 - Complete re-write
+* Angular 3 was skipped
+* Angular 4 - 9
+
+
+Angular CLI
+-----------
+* Create new Angular Project, Components, Services, etc
+* Run the Angular Application in the development mode as it optimizes the code heavily and make some changes in the code before running
+* Builds the Angular Application for production
+* Takes care to convert TypeScript code into JavaScript while Node is used to bundle it
+* Node.js is used for bundling and for npm
+* npm is also used to manage the dependencies of Angular libraries
+
+
+Create your first application
+-----------------------------
+* ng new MyFirstApplication
+* Rename MyFirstApplication to My First Application
+* Start the Application: ng serve
+
+
+Project Structure
+-----------------
+* package.json - Dependencies and development dependencies of the application
+* node_modules - Dependencies get installed in the node_modules folder
+* e2e - Includes the code of end-to-end testing
+* src - Source code/Development code
+* app.component.html - Contains the html code used by the component
+* app.component.ts - Typescript files that wires up html, css and business logic
+* <app-root> in rendered page is the custom tag which we have created using Angular
+- In component we have specified which tag should our component be referred as using selector property of @Component decorator
+
+
+* Data binding
+--------------
+- Data can be binded to any tag using {{<<variable name of the component.ts>>}} syntax
+- If you want to bind or send data from html to component we have to use ngModel directive provided by Angular
+- We cannot directly use [(ngModel)] because it's unknown for Angular
+- So we have to import a package named @angular/forms which provides FormsModule which further provides ngModel directive in the app.module.ts which has everything a component needs
+
+In this way we can create multiple components and re-use them in our application
+
+
+What is TypeScript?
+-------------------
+* Layer over JavaScript
+* Type strict
+* Helps to optimize the code as per V8 engine's requirement
+* Many features & design patterns using TypeScript
+
+
+Setup Bootstrap in Angular
+-------------------------
+* Install Bootstrap: npm i --save bootstrap
+* Navigate to angular.json
+- angular.json: CLI configuration file
+- Find styles array and add path of bootstrap in that styles array
+- Below is the example
+
+	"styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.css"
+        ],
+
+Note: style.css code will be used by every component

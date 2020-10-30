@@ -1,0 +1,481 @@
+Forms
+=====
+
+Introduction
+------------
+- Normally we submit the form to the server with the data
+- Angular is a SPA running on it's own independent server, so we won't be submitting the form
+- If the data is to be saved to the database then we would need to submit the data using HTTPService of the Angular
+- What does Angular forms does for us?
+  i. Data binding
+  ii. Data validation
+  iii. Change the forms dynamically and many more
+- Angular ships with very powerful form features and it does all the heavy lifting for us
+
+
+Why you need Angular's help?
+----------------------------
+- Normally when we use forms we need the data for validation to be handled in JavaScript/TypeScript
+- This data is to be formed on our own
+- When we use Angular we get all the data of the form in an object formed by the Angular
+
+
+Two Approaches of Forms
+-----------------------
+- Template driven forms
+  i. Easy to use
+  ii. We create a form in the template and it returns the object of the input with all the validation details and many more
+  iii. Form is structured on the template-side only
+  iv. We have a little less control as compared to the Reactive forms
+- Reactive forms
+  i. We have to setup form in both template and TypeScript and manually connect it
+  ii. It gives a full control over the form
+  iii. Little complex to use
+
+
+Template driven forms
+---------------------
+- Create a normal form with input, labels and button
+- Don't keep form's action attribute because it will trigger the default behaviour of submitting the form to the server
+- Angular form's module by default identifies the form with the form tag selector
+- Behind the scenes the form is a directive with tag selector, so Angular knows about the form
+- But the Angular doesn't know about the inputs because this functionality has a lot of different scenarios and hence it was not done by default
+  Scenarios like:
+  i. Customized inputs - like <aura-dropdown>
+  ii. Some inputs are to be submitted conditionally and many more
+- So we have to add ngModel directive without databinding on the input we need to submit
+- So when we want to get the object of the form, the Angular would need a name so that it could create a property of that name when it returns to us
+- Hence whenever ngModel is used it always needs name attribute too
+- Now the form won't be submitted automatically as we have removed the action attribute
+- So add (ngSubmit) event binding and the method of that component to be triggered
+  Example:
+
+  <form (ngSubmmit)="onSubmit()">
+  .
+  .
+  .
+  .
+  </form>
+
+- Now whenever the <button type="submit">...</button> is clicked the Angular will trigger onSubmit method of the component
+- Now how do we get the data?
+  i. Add the local referrence to the form and pass it to the onSubmit method
+
+    <form (ngSubmmit)="onSubmit(data)" #data>
+
+    The data received by the onSubmit method would be of type HTMLFormElement and not the object
+
+    a. So we have to tell the Angular that pass the object containing the input values in our onSubmit method, this can be done like this:
+
+      <form (ngSubmmit)="onSubmit(data)" #data="ngForm">
+
+      ngForm informs Angular to create the object of input and send it to our method
+
+    b. We can also get the data using ViewChild, @ViewChild('<<local_reference_name>>') is used to get the local reference from the template
+
+      In our case it would be
+
+      <form (ngSubmmit)="onSubmit()" #data="ngForm"> <!-- We didn't pass local reference in onSubmit() methods -->
+
+      In our component's typescript file we get it like this:
+
+      @ViewChild('data') formData: NgForm;
+
+      ViewChild is used whenever we want the data before the form is submitted for validation purposes or it can be anything else
+
+
+NgForm
+------
+- Type NgForm is the type which is formed by the Angular forms to convert our form data into an object
+- Along with the values it also gives a lot of information related to our form
+- Some of them are:
+  i. touched: boolean - True of the form is touched
+  ii. dirty: boolean - True if we have added any data in the form
+  iii. invalid: boolean - True if the any input is invalid
+  iv: errors - Errors after submitting the form and many more
+
+
+Validations
+-----------
+- Whenever we submit the form we get to know if the form is dirty, touched, invalid. We also come to know exactly which input is invalid through NgForm
+- Let's add the validations
+  * Add the built-in Angular validations in HTML inputs like required, email etc
+- Angular will automatically understands the form validity through it's in-built directives
+- Angular does one more important thing along with sending the validation details in NgForm and that is add some classes depending on the validations on the form input
+- Examples:
+  i. ng-valid: If the input is valid
+  ii. ng-invalid: If the input is invalid
+  iii. ng-touched: If the input is touched
+  iv. ng-dirty: If the input has anything in it
+- We can change the border or any style of the input with the help of these classes which are added dynamically by the Angular
+- List of built-in validators ships with Angular: https://angular.io/api?type=directive
+
+Validations with messages
+-------------------------
+- Now we know that Angular adds different classes dynamically depending on the validation and we can change the stylings of that input
+- But we also add help text to tell the user what's the exact problem, to be more descriptive
+- So we can add a span below the input
+
+  Example:
+
+  <input type="text" required ngModel name="username" placeholder="Username">
+  <span>Please enter the username</span>
+
+- Now this would be visible all the time, we would need to make this visible only when the input is invalid and use ngIf in span
+
+  For getting the validation information of the input we can use local references of the input with ngModel directive in it so that it would convert the local reference of the input into the descriptive object similar to the way what ngForm does for us
+
+  <input type="text" required ngModel name="username" placeholder="Username" #username="ngModel">
+  <span *ngIf="username.invalid && username.touched">Please enter the username</span>
+
+
+Default values in form
+----------------------
+- You can keep a default value in the form using property binding of ngModel to a property in the typescript file
+- Example:
+
+  <select [ngModel]="defaultValue">.......</select>
+
+
+Grouping the data
+-----------------
+- For a huge form we might have some nested data to be sent to the server for example:
+
+  data = {
+    userData: {
+      firstName: 'Nate',
+      lastName: 'Diaz
+    },
+    education: {
+      highestEducation: 'Bachelors'
+    }
+  }
+
+- We can wrap our form inputs in a div and add the directive ngModelGroup on that div which will make sure that this data should be grouped and for name of that property we also specify the value of that directive, so the final work would be:
+
+  <div ngModelGroup="userData">
+    <input..../>
+    <input..../>
+  </div>
+
+- If you want to validate the data according to the group then you get the group validation too
+- Just add a local reference and use it
+
+  <div ngModelGroup="userData" #user="ngModelGroup">
+    <input..../>
+    <input..../>
+  </div>
+
+  <p *ngIf="user.invalid && user.touched">Invalid user data<p>
+
+
+Radio Buttons
+-------------
+- Code:
+
+  TypeScript:
+  -----------
+  genders = ['male', 'female', 'transgender'];
+
+  HTML:
+  -----
+
+  <div class="form-group">
+    <div *ngFor="let gender of genders" class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="gender"
+        [id]="gender"
+        ngModel
+        [value]="gender">
+      <label class="form-check-label" [for]="gender">
+        <span class="capitalize">{{ gender }}</span>
+      </label>
+    </div>
+  </div>
+
+
+NgForm's setValue and NgForm's form's patchValue methods
+--------------------------------------------------------
+- We can completely set the value of ngModel of the form through typescript using this.formData.setValue()
+- setValue() needs all the object otherwise it will reset it
+- Most of the times we would like to just edit the single input rather than the entire ngModel, so in such cases we use patchValue
+- this.formData.form.patchValue()
+
+Form Reset
+----------
+
+  @ViewChild('formData') formData: NgForm;
+
+  onReset() {
+    this.formData.reset();
+  }
+
+
+Reactive Forms
+--------------
+- Reactive forms are the forms handled programatically so we first create the basic HTML structure and then jump rights into the typescript file
+- Instead of FormsModule, reactive forms require ReactiveFormsModule imported in our AppModule
+- Then we create a variable of type FormGroup in the typescript, previously we used NgForm which wraps all the inputs and returns an object but behind the scenes NgForm also had FormGroup inside it, and at the end, form is also a group of all the other input elements. Hence we would need FormGroup
+
+
+FormGroup
+---------
+- Similar to NgForm in Template driven forms, FormGroup is used in Reactive Forms
+- We can setup the FormGroup and create the object as we want which would have the value of inputs
+- Example:
+
+  signUpForm: FormGroup;
+
+  ngOnInit(): void {
+    this.signUpForm = new FormGroup({
+      username: new FormControl(null),
+      email: new FormControl(null),
+      gender: new FormControl('male')
+    });
+  }
+
+- FormGroup is the collection of FormControls we have created the skeleton of the Object we want in the values and it will have the data of the FormControls in our plain form
+- Constructor takes three parameters:
+  1. Default value: String
+  2. Validator/Array of validators
+  3. Asynchronous validator/Array of asynchronous validators
+- Now we have to connect the plain form with this FormGroup
+- Go to the template and add formGroup directive in the form and bind it to the signUpForm
+
+  <form  [formGroup]="signUpForm">
+
+  Now our form is connected to our FormGroup in typescript
+
+- Now we have to connect the form controls with the properties of our signUpForm: FormGroup
+- Add formControlName directive to the input and assign it the value same as the property name of our signUpForm: FormGroup
+  Example:
+
+  <input formControlName="username".....>
+  <input formControlName="email".....>
+
+- Finally bind (ngSubmit) to the method of our component, as we've removed the default behaviour of the form i.e. Submitting form directly on the application server
+- So the difference between reactive forms and template driven forms is we don't need local reference to get the data, we already form the data in out typescript file through FormGroup
+- formGroup, formControlName directives are provided by the module ReactiveFormsModule
+
+
+Validators
+----------
+- In the template driven forms we configure the form in the template itself like the properties, name of the properties, validations, local referrences and many more
+- But remember in reactive forms we don't configure the form in template but in typescript file, we just sync them to the template but the configuration is done in the typescript file only
+- That's the reason our FormControl takes multiple arguments so that we can pass default value and validators
+- Let's add the validators
+
+  ngOnInit(): void {
+    this.signUpForm = new FormGroup({
+      username: new FormControl(null, Validators.required),
+      email: new FormControl(null, [Validators.required, Validators.email]),
+      gender: new FormControl('male')
+    });
+  }
+
+  Now you would get the ng-invalid class attached to the input if the input fails validation
+
+- When you want to add the helper text use signUpForm from the component to get the access to the input's data, like this:
+
+  <span
+    *ngIf="signUpForm.get('email').invalid && signUpForm.get('email').touched"
+    class="span-validation-help">
+    Please enter a valid email
+  </span>
+
+  signUpForm.get('<formControlName | formControlPath>') (formControlPath if the FormControls are nested in the FormGroup)
+
+
+Grouping inputs
+---------------
+- In the template driven forms we grouped the data by wrapping the inputs in a div and used ngModelGroup="<<group_name>>"
+- Even in the reactive forms we wrap the div inputs in a div
+- But we configure our form in the typescript, so the group is to be created in the typescript
+
+  Suppose you wanna group below email and username in userData
+  
+  signUpForm = new FormGroup({
+    email: new FormControl(null, [Valitors.email, Validators.required]),
+    username: new FormControl(null, Validators.required),
+    gender: new FormControl('male')
+  });
+
+  We create a new FormGroup inside the FormGroup
+
+  signUpForm = new FormGroup({
+    userData: new FormGroup({
+      email: new FormControl(null, [Valitors.email, Validators.required]),
+      username: new FormControl(null, Validators.required),
+    }),
+    gender: new FormControl('male')
+  });
+
+  Now we have configured the form group, but now the form should be re-synchronized according to the group, and change the following things
+  
+  i. formControlName="email" to formControlName="userData.email"
+  ii. ngIf="signUpForm.get('email')......" to ngIf="signUpForm.get('userData.email')......"
+
+  And the div that is wrapping the email and username input should have the directive formGroupName="userData"
+
+
+Dynamic Form Inputs & FormArray
+-------------------------------
+- We can also create dynamic form inputs depending on the user
+- For example: Suppose we want the user to enter his hobbies we can add a button and once a user clicks the button new input would be appended to the template
+- This can be done by binding the click event to the method of the component and somehow add the dyanamic form controls through our FormGroup
+- In our case we would need the data of hobbies in form of array because it's related to one topic
+- Angular provides a powerful feature of FormArray
+- We can create an empty FormArray inside a FormGroup and push the FormControls on it depending on user
+
+  Example:
+
+  this.signUpForm = new FormGroup({
+    .
+    .
+    .
+    .
+    hobbies: new FormArray([])
+  });
+
+  FormArray is an array of FormControl
+
+  onAddHobbies() {
+    // Add the logic to add the FormControl to the FormArray here
+  }
+
+  Now once the user clicks on add hobbies we will add FormControl on the FormArray, like this:
+
+  onAddHobbies() {
+    (<FormArray>this.signUpForm.get('hobbies')).push(new FormControl(null, Validators.required));
+  }
+
+  We have casted hobbies to FormArray explicitly so that our typescript would use it properly, it can also be casted in the following way:
+
+  (this.signUpForm.get('hobbies') as FormArray).push(new FormControl(null, Validators.required));
+
+- Now we have done all the required setup in the typescript, now let's synchronized the template
+
+  As we need the data in hobbies array we would have to wrap all the inputs in a div with formArrayName="hobbies" directive in it
+
+  <div formArrayName="hobbies">.....</div>
+
+  Now add the remaining details
+
+  <div formArrayName="hobbies">
+    <div
+    class="form-group"
+    *ngFor="let control of getControls(), let i = index">
+      <span class="text-danger" *ngIf="control.invalid && !control.untouched">Please enter a hobby</span>
+      <input
+      type="text"
+      placeholder="Hobby"
+      class="form-control"
+      style="margin-top: 0.5rem;"
+      [formControlName]="i">
+    </div>
+  </div>
+
+  We have added the getControls() method which returns all the controls of the hobbies
+
+  getControls() {
+    return (this.signUpForm.get('hobbies') as FormArray).controls;
+  }
+
+  Input should be named with the index so we have the directive [formControlName]="i" and that's it
+
+- Now you can see how reactive forms are used for more advanced features like dynamic forms
+
+
+Custom Validators
+-----------------
+- You can add any method in your component as a validator
+- Validator method always gets FormControl as a parameter and must return { [any-key: string]: true } if the user has entered invalid data
+- Add this validator to your FormControl
+- Example:
+
+  new FormControl(null, [Validator.required, this.isForbiddenName]);
+
+  isForbiddenName(control: FormControl): { [key: string]: boolean } {
+    const forbiddenNames = ['Nick', 'Nate];
+
+    if (forbiddenNames.includes(control.value)) {
+      return { forbidden: true };
+    }
+
+    // Don't return { forbidden: false } in else case you must only return { forbidden: true } on invalid data and that's it
+    // You can return null in else case, but it's not required
+  }
+
+  There is one problem whenever FormControl is gonna call our isForbiddenName() method it's gonna use forbiddenNames array using this
+  So it will try to search forbiddenNames in it's class and it won't find it and hence it will throw an error
+
+  So always bind "this" while using custom validator, so the correct code would be:
+
+  new FormControl(null, [Validator.required, this.isForbiddenName.bind(this)]);
+
+
+Specific errors
+---------------
+- Suppose you wanna show different messages based on different errors then you can use errors property of a control and show the error message accordingly
+- Example:
+
+  <div class="form-group">
+    <label for="username">Username</label>
+    <span
+      *ngIf="
+        signUpForm.get('userData.username').invalid && 
+        signUpForm.get('userData.username').touched &&
+        signUpForm.get('userData.username').errors['forbidden']" 
+      class="span-validation-help text-danger">
+      Please enter a valid username
+    </span>
+    <span
+      *ngIf="
+        signUpForm.get('userData.username').invalid && 
+        signUpForm.get('userData.username').touched &&
+        signUpForm.get('userData.username').errors['required']" 
+      class="span-validation-help text-danger">
+      Please enter a username
+    </span>
+    <input
+      type="text"
+      id="username"
+      class="form-control"
+      placeholder="Username"
+      autocomplete="off"
+      formControlName="username">
+  </div>
+
+  Here the error message is different if the username is among forbidden username and different for blank username
+
+
+Asynchronous custom validators
+------------------------------
+- Sometimes you might want to request the server for a validation for example to check if the email address already exists or not
+- This means we would have a validator function similar to the above custom validator and the only difference is it would return a promise or an Observable
+- And instead of registering the validator in the array of validators in second argument we register it in the third arguement it takes single asynchronous validator or the array of asynchronous validators
+- Example:
+
+  this.signUpForm = new FormControl({
+    email: new FormControl(
+      null,
+      [
+        Validators.required,
+        Validators.email,
+      ],
+      this.isForbiddenEmail // asynchronous validator
+    ),
+  });
+
+- Also when the Angular is executing the async validator it adds the class ng-pending to the input until it gets the response/the promise of the validator is resolved
+
+
+Observables of FormGroup
+------------------------
+- FormGroup.valueChanges
+- FormGroup.statusChanges
+
+
+Setting, patching and resetting the form is same as of template driven forms

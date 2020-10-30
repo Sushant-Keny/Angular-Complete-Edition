@@ -1,0 +1,6 @@
+<app-header (render)="onRender($event)"></app-header>
+
+<div class="container-fluid">
+  <app-recipes *ngIf="loadedFeature === 'recipeList'"></app-recipes>
+  <app-shopping *ngIf="loadedFeature === 'shoppingList'"></app-shopping>
+</div>

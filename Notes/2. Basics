@@ -1,0 +1,138 @@
+How an Angular Application gets loaded/started?
+-----------------------------------------------
+- main.ts file is executed first
+- main.ts file knows about the app.module.ts which has app.component.ts
+- So the single page application we see on the browser is index.html
+- Angular cli injects some javascript imports into the index.html at runtime which makes index.html know about the component which is later treated as the tag
+- So in-short we create the custom tags/components in Angular and selector is the tag name, html is the template and css is it's look and feel and & finally it's functionality is stored in component.ts file
+- Angular is a JavaScript Framework which can change your DOM at runtime
+
+
+Components are important!
+-------------------------
+- Component is the key feature of Angular Application
+- App Component is the root component of the application
+- We create an entire website by composing different components together
+- Components are wired up/composed in App component
+- For. e.g. Navigation can be a component, Nav Link can be an another component, other components could be Side Bar, Slider, Alert etc.
+- This makes the code very maintainable, re-usable
+- Consider a car, if a car is made up of single component if anything happens to the car, we would have to fix/change entire car. As the car is desgined with multiple components, we can change the mirror if the mirror is damaged, tire if the tire is damaged.
+
+
+Creating a new Component
+------------------------
+- Components are normal JavaScript classes
+- Components should be decorated with @Component() decorator, this provides Angular CLI the metadata about the class and tell Angular that it's a component. Hence while bundling and compiling Angular will create this component class as the HTML element which can be used in the browser
+
+
+Register a component
+--------------------
+- App module is the main module of the application
+- We can have multiple modules in the application, but app module is enough for most of the applications
+- Angular doesn't come to know about the components of the applications, so we have to import our component and pass it to the declarations array of App Module
+- App module is the main module known to main.ts and App component is the one which is known to the index.html while running the website, other components are used inside it
+- So App component is the Bootstrap/Start component too
+
+
+How to use the component?
+-------------------------
+- We can use the selector of the component in app.component.html directly
+- <app-server></app-server>
+
+
+Creating components with CLI and Nesting Components
+---------------------------------------------------
+- We can create a new component with ng generate component <<component name>>
+- This will automatically wire up the component in app.module.ts
+- We can directly use any other component's selector inside any component in the same module
+
+
+Data Binding
+------------
+- Communication between HTML and Typescript
+- Dynamism
+- Sometimes we might want to pass the data from typescript file to template and vice versa.
+	* In the above scenario we can use data binding
+	* Types of Data Binding
+		- One Way Data Binding
+			* String Interpolation: <h1>{{ <<variable_name>> }}</h1>
+			* Property Binding: <p [property]="<<typescript_expression>>"></p>
+			* Examples
+				- <button [disabled]="1 === 1">Disabled Button</button>
+				- <p [innerText]="generateRandomString()"></p>
+		- Event Binding
+			* It's used for action listeners for templates
+			* We can call any method on button click, input change or any action
+			* Event is wrapped inside ()
+			* Examples
+				- <button (click)="onAddServer()">Add Server</button>
+				- <input type="text" (input)="onTextChange($event)" />
+				Note: $event is the event data
+		- Two Way Data Binding
+			* ngModel Directive
+			* Wrapped inside [()]
+			* It can listen to the variable and change it's value and it can also change the value of variable on change
+			* Example: <input type="text" [(ngModel)]="<<variable_name>>">
+
+
+String Interpolation in action
+------------------------------
+- One way data binding
+- Typescript to HTML
+- We can use anything inside a String Interpolation given the data must be String
+- We can also call a function which returns String
+- We can add anything which returns string in a single line
+
+
+Property Binding
+----------------
+- Dynamically bind the data to the property of any HTML Tag
+- Syntax: [<<property_name>>]="<<variable_name>>" || [<<property_name>>]="<<typescript_expression>>"
+
+
+Note: Use property binding whenever you want to change the value of the attribute, if you just want to bind the data to the tag then use String Interpolation
+
+
+Event Binding
+-------------
+- Action listeners for HTML tags onClick, onTextChange etc.
+- In Angular we can use event binding to perform some event on User's Action
+- Syntax: <button (<<event_name>>)="<<angular_code>>"></button>
+- Example:
+	1. <button (click)="onCreateServer()"></button>
+	2. <button (click)="serverCreationStatus='Server created successfully'"></button>
+
+
+Two-way data binding
+--------------------
+- It's done using [(ngModel)] directive
+- [()] represents two-way data binding
+- Two-way data binding means the tag will listen as well as output the data to typescript
+
+
+Directives
+----------
+- One of the main building block of Angular
+- Directives are instructions to the DOM
+- It asks DOM to do something for it
+- Directives are mostly used as attribute selector but same as component we can use directive as a tag selector or a class selector
+- There are many built-in directives in Angular
+- Directives can be defined using @Directive decorator
+- Components are also kind of directives only, where we ask DOM to place our component against the selector
+
+Directives
+----------
+- Structural directive starts with *
+- Structural directives are directives which changes the DOM Structure
+
+
+Examples:
+--------
+i. *ngif
+ii. ngStyle
+	- Used to apply style to an Angular template
+	- ngStyle is very powerful with property binding where we can dynamically set the value of style through typescript code
+iii. ngClass
+	- Used to dynamically add the class to the Angular template tag
+iv. *ngFor
+	- Used for iterating through an array and dynamically append the elements

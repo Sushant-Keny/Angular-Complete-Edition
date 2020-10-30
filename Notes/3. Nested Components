@@ -1,0 +1,12 @@
+Nested Components
+-----------------
+- First create main component: ng generate component <<component_name>>
+- Nest the component inside the main component: ng generate component <<parent_component>>/<<component_name>>
+- Skip tests: ng generate component <<component_name>> --skip-tests
+
+
+Model
+-----
+- <<model_name>>.model.ts
+- Type of the object
+- Models used in multiple components are kept in shared folders

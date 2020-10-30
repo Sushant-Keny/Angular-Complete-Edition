@@ -1,0 +1,21 @@
+<section class="row">
+  <div class="col-12">
+    <h1 class="display-4">Recipe List</h1>
+  </div>
+
+  <div class="col-12">
+    <button class="btn btn-success">New Recipe</button>
+  </div>
+
+  <!-- Recipe List -->
+  <div class="col-12">
+    <div class="list-group">
+      <app-recipe-item
+        *ngFor="let recipeEl of recipes"
+        [recipe]="recipeEl"
+        (recipeSelected)="onRecipeSelected(recipeEl)">
+      >
+      </app-recipe-item>
+    </div>
+  </div>
+</section>

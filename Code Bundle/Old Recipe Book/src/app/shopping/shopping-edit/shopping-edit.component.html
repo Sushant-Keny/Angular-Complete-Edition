@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-12">
+    <h2 class="lead">Recipe List</h2>
+  </div>
+  <div class="col-12">
+    <form>
+      <div class="form-group row">
+        <div class="col">
+          <input type="text" class="form-control" placeholder="Name" #nameInput>
+        </div>
+        <div class="col">
+          <input type="number" class="form-control" placeholder="Amount" #amountInput>
+        </div>
+      </div>
+    </form>
+    <div class="form-group row recipe-buttons">
+      <div class="col-10">
+        <button type="submit" class="btn btn-success" (click)="onAddIngredient()">Add</button>
+        <button type="button" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-primary">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>

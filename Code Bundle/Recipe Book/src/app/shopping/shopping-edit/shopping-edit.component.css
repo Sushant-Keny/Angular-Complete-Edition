@@ -1,0 +1,8 @@
+.recipe-buttons button { margin-right: 10px; }
+h2:first-child { margin: 10px 0 20px 0; }
+
+.errors-block {
+  padding: 1rem;
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
+}

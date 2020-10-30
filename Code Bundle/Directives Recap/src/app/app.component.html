@@ -1,0 +1,59 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <button 
+        type="button" 
+        class="btn btn-primary btn-lg btn-block"
+        (click)="even = !even">
+          Toggle Numbers
+      </button>
+    </div>
+    <div class="col-12">
+      <ul class="list-group">
+        <div *ngIf="even">
+          <li
+            class="list-group-item"
+            [ngStyle]="{ backgroundColor: even % 2 === 0 ? '#ffebcd' : 'transparent' }"
+            [ngClass]="{ lead: even }"
+            *ngFor="let even of evenNumbers">
+            {{ even }}
+          </li>
+        </div>
+        <!-- <div *ngIf="!even">
+          <li 
+            [ngStyle]="{ backgroundColor: odd % 2 !== 0 ? '#6ceded' : 'transparent' }"
+            [ngClass]="{ lead: !even }"
+            class="list-group-item"
+            *ngFor="let odd of oddNumbers">
+            {{ odd }}
+          </li>
+        </div> -->
+        <div *appUnless="even">
+          <li 
+            [ngStyle]="{ backgroundColor: odd % 2 !== 0 ? '#6ceded' : 'transparent' }"
+            [ngClass]="{ lead: !even }"
+            class="list-group-item"
+            *ngFor="let odd of oddNumbers">
+            {{ odd }}
+          </li>
+        </div>
+      </ul>
+    </div>
+    <div class="col-12">
+      <h1
+        class="display-4"
+        [defaultColor]="'transparent'"
+        [highlightColor]="'deeppink'"
+        appBetterHighlight>
+        Style me with the highlight
+      </h1>
+    </div>
+    <div class="col-12" [ngSwitch]="value">
+      <p class="lead text-center" *ngSwitchCase="5">Number 5</p>
+      <p class="lead text-center" *ngSwitchCase="10">Number 10</p>
+      <p class="lead text-center" *ngSwitchCase="15">Number 15</p>
+      <p class="lead text-center" *ngSwitchCase="20">Number 20</p>
+      <p class="lead text-center" *ngSwitchDefault>Default Number</p>
+    </div>
+  </div>
+</div>

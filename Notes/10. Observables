@@ -1,0 +1,214 @@
+Understanding Observables
+=========================
+
+What is an Observable?
+-----------------------
+- It's used to handle asynchronous code
+- Similar to promises, callbacks, event emitters; observable is just a different approach to handle these tasks
+- Angular embraces Observables
+- Observables have some advantages over other patterns of handling asynchronous operations for e.g. Operators
+- Observable is attached to a data source and it can emit the data packages through a stream
+- Observales can be customized too
+- Examples of Observables: User Input, Events, HTTP Request, Route Objects, triggered in the code
+- Observables have observer i.e. your subscribe function
+- There are three hooks for observer:
+  i. Handle data
+  ii. Handle error
+  iii. Handle completion:
+    * Some observables don't get completed for e.g. Obeservable which gets emitted on a User Click
+    * While some observables get completed for e.g. HTTP request observable gets completed once we get the response
+- Observable emits the data packages in chunks
+
+
+Interval - RxJs
+-------------------
+- When we call interval method of RxJs it returns in observable
+- This observable emits the sequential numbers once subscribed
+- Unlike Route's params observable the interval observable should be unsubscribed as it's not done at the component descruction by the Angular. Hence we need to do it on our own
+- So whenever you create a custom Observable make sure you unsubscribe it in onDestroy() hook of the component
+
+
+Create custom observable
+------------------------
+- You can create custom observable using two ways:
+  i. new Observable()
+  ii. Observable.create(): Observable
+- Both takes callback function as a parameter and pass the subscriber to the callback function as a function parameter
+- E.g.
+
+  const intervalObservable = new Observable((subscriber) => {
+    // Your code
+  });
+
+- The reason of passing subscriber is to emit the data to the subscriber, so that subscriber can handle the data
+- Example of creating an interval observable:
+
+  const intervalObservable = new Observable((subscriber) => {
+    let i = 0;
+
+    setInterval(() => {
+      subscriber.next(i); // Emits the data event on the subscriber
+      i++;
+    });
+  });
+
+
+Hooks of observable
+-------------------
+- data: This hook is called when observable calls observer.next(data) method
+- error: This hook is called when observable calls observer.error(new Error('')) method
+- complete: This hook is called when observable calls observer.complete() method
+
+Note: Complete hook is not called at the error even if the observable stops
+
+
+Operators
+---------
+- Operators are the one who makes Observable more popular
+- We can transform the data streamed by the observable using Operators
+- There are many operators like: map, filter and so on
+- These operators are used to transform the data systematically rather than doing it inside the observer/data hook
+- We can use observer inside observable.pipe() method
+- Operators are very useful for clean code and make code looks systematic
+- Observable is vast a design pattern to handle asynchronous operations
+- Example:
+
+  this.subscription = interval
+    .pipe(
+      filter((data: number) => {
+        return data % 2 === 0;
+      }),
+      map((data) => {
+        return `Round: ${data}`;
+      })
+    ).subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        console.log('Observable completed');
+      }
+    );
+
+
+Subject
+-------
+- Subject is a special type of Observable
+- Whenever you use EventEmitter to trigger an event programmatically use Subject instead of EventEmitter
+- Subject have significant advantages over Observable
+  i. Behind the scenes it's much better than EventEmitter
+  ii. It allows us to use the RxJs Operators as Subject is an Observable
+  iii. There are two types of Observables:
+    a. Passive Observables:
+      - Interval
+      - HTTP
+      - Route
+      - The observable which can be emitted any time and it's unpredictable
+    b. Active Observables:
+      - Observables which we know when they're gonna get called
+      - Example: Observable emitted from the service, this is called Subject
+      - We can call next from the outside, in the case of observable we can call next inside the callback only
+      - So the EventEmitter used in Service should always be Subject
+- Use Subject instead of EventEmitters, we cannot use Subject while using @Output() param of the component, i.e. Sending data from child component to parent component through an event binding. In this case it's recommended to use EventEmitter only
+
+
+BehaviourSubject
+----------------
+- Very important Observable in RxJs
+- Normally when we use Subject, the subscriber of that Subject will only get value emitted after his subscription
+- Example:
+
+  const choclate = new Subject<Choclate>();
+
+  choclate.next(new Choclate('Milky Bar'));
+
+  choclateSubscriber = choclate.subscribe((choclate) => {
+    console.log(choclate.name);
+  });
+
+  // Output would be nothing till now
+
+  choclate.next(new Choclate('Dairy Milk'));
+
+  // Now the output would be 'Dairy Milk'
+
+- Sometimes you might want to get the last subscribed data too, at that time you can use BehaviourSubject
+- BehaviourSubject must have an initial value while instantiation
+- Example:
+
+  const choclate = new BehaviourSubject<Choclate>();
+
+  choclate.next(new Choclate('Milky Bar'));
+
+  choclateSubscriber = choclate.subscribe((choclate) => {
+    console.log(choclate.name);
+  });
+
+  // Program would log 'Milky Bar'
+
+  choclate.next(new Choclate('Dairy Milk'));
+
+  // Program would log 'Dairy Milk'
+
+
+Take operator
+-------------
+- Sometimes you just need a value emitted by the Subject/BehaviourSubject and then unsubscribe
+- Suppose you wanna have the last emitted choclate by the BehaviourSubject and just unsubscribe the BehaviourSubject
+- One way to do it would be:
+
+  const choclate = new BehaviourSubject<Choclate>();
+
+  choclate.next(new Choclate('Milky Bar'));
+
+  choclateSubscriber = choclate
+    .subscribe((choclate) => {
+      console.log(choclate.name);
+    })
+    .unsubscribe();
+
+- There's a better way to do it with one more advantage i.e. take operator
+- Take operator allow us to use the value and just unsubscribe the Observable
+
+  const choclate = new BehaviourSubject<Choclate>();
+
+  choclate.next(new Choclate('Milky Bar'));
+
+  choclateSubscriber = choclate
+    .pipe(
+      take(1)
+    )
+    .subscribe((choclate) => {
+      console.log(choclate.name);
+    });
+
+  take(1) means we say take the 1st emitted value by the Observable and unsubscribe it,
+
+  If we say take(5) then it will take 1st five values emitted by the Observable and then unsubscribe it which is the true advantage of the take operator
+
+
+ExhaustMap Operator
+-------------------
+- It transforms the observable to a new Observable
+- Use Case: Suppose you get a choclate from an Observable and you wanna use that Choclate in another Observable which request the create Cake REST API to create the Cake
+- Observable is asynchronous so we have to take the choclate and then use it inside the create cake obeservable
+- Solution
+
+  this.choclate.pipe(
+    take(1), // Takes the previous emitted choclate
+    exhaustMap((choclate: Choclate) => {
+      // Uses the choclate emitted by choclate observable and transform the control to another observable
+      // Transforms the control to the create cake observable
+      return this.http.post<Cake>('https://api.cupkates.com/cake', {
+        ...cakeIngredients,
+        choclate: choclate.id
+      });
+    },
+    tap((cake: Cake) => {
+      // Use the data emitted by the new transformed create cake observable
+      this.cakeService.addCake(cake);
+    });
+  );

@@ -1,0 +1,8 @@
+.btn-new-server { margin-top: 0.5rem; }
+.sort-buttons-group > button { margin-right: 0.5rem; }
+.sort-buttons-group { margin: 1rem 0; }
+
+.badge {
+  position: absolute;
+  right: 1rem;
+}

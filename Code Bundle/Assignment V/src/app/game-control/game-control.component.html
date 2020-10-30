@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="col-12">
+    <section class="jumbotron">
+      <h1 class="display-4">Game Control</h1>
+      <p class="lead">
+        It's all about the game and how you play it.
+        All about control and if you can take it.
+      </p>
+      <hr class="my-4">
+      <p>You can start and stop the counter with these</p>
+      <button class="btn btn-primary btn-lg" href="#" role="button" (click)="onStart()">Start</button>
+      <button class="btn btn-danger btn-lg" href="#" role="button" (click)="onStop()" [disabled]="!intervalId">Stop</button>
+    </section>
+  </div>
+  <div class="col-12">
+    <div class="row">
+      <div *ngFor="let c of counter" class="col-1">
+        <app-even [counter]="c" *ngIf="c % 2 === 0"></app-even>
+        <app-odd [counter]="c" *ngIf="c % 2 !== 0"></app-odd>
+      </div>
+    </div>
+  </div>
+</div>

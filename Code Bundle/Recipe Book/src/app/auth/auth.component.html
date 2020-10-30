@@ -1,0 +1,78 @@
+<section>
+  <div class="row">
+    <div class="col-3">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="display-4">Welcome!</h1>
+        </div>
+        <div class="col-12">
+          <form (ngSubmit)="onSubmit(authForm.value)" #authForm="ngForm">
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <span
+                *ngIf="email.invalid && email.touched && email.errors.required"
+                class="text-danger">
+                Email is required
+              </span>
+              <span
+                *ngIf="email.invalid && email.touched && email.errors.email"
+                class="text-danger">
+                Invalid Email
+              </span>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                ngModel
+                name="email"
+                autocomplete="off"
+                required
+                email
+                #email="ngModel">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <span
+                *ngIf="password.invalid && password.touched && password.errors.required"
+                class="text-danger">
+                Password is required
+              </span>
+              <span
+                *ngIf="password.invalid && password.touched && password.errors.minlength"
+                class="text-danger">
+                Minimum 6 characters
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                ngModel
+                name="password"
+                required
+                minlength="6"
+                #password="ngModel">
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="authForm.invalid">
+              {{ isLoginMode ? 'Login' : 'Sign Up' }}
+            </button>
+            <button type="button" class="btn btn-success" (click)="onSwitchMode()">
+              Switch to {{ isLoginMode ? 'Sign Up' : 'Login' }}
+            </button>
+          </form>
+          <!-- <div *ngIf="error" class="error alert alert-danger" role="alert">
+            <h4>Error</h4>
+            <p>{{ error }}</p>
+          </div> -->
+          <!-- <app-alert *ngIf="error" [message]="error" (close)="onCloseModal()"></app-alert> -->
+          <ng-template appPlaceholder></ng-template>
+        </div>
+      </div>
+    </div> 
+    <div class="col-9">
+      <img
+        src="https://assets.epicurious.com/photos/5af313a832c9206db5f1a110/16:9/w_2560%2Cc_limit/no-recipe-required-pound-cake-30082016.jpg"
+        alt="Recipe Book"
+        class="img-fluid">
+    </div>   
+  </div>  
+</section>

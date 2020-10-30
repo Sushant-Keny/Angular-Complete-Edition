@@ -1,0 +1,15 @@
+.display-4 { font-size: 2.5rem; }
+form { margin-top: 1rem; }
+
+input.ng-invalid.ng-touched {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dc3545;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(225,83,97,.5);
+}
+
+.span-validation-error {
+  margin-left: 1rem;
+  color: #dc3545;
+}

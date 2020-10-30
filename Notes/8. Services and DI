@@ -1,0 +1,30 @@
+Using Services And Dependency Injection
+=======================================
+
+What are Services?
+------------------
+- Used to avoid the duplication of code
+  For e.g. For logging we can create logger services, where it can be used by all over the application
+- Services can be used for data storage and the central repository too
+  For e.g. User Service for all the user components where service can fetch all the users, update the user's data, delete the user and many more
+- Services is one of the main building block in Angular same as Components, Directives
+- Communication between the components
+
+
+Services in action
+------------------
+Take a look at Services & DI with commit "Transform the code to use services"
+
+
+Hierarchical Injector
+---------------------
+- AppModule - Same instance of Service is available Application-wide
+- AppComponent - Same instance of Service is available for all Components (but not for other services)
+- Any other component - Same instance of Service is available for the Component and it's child components
+
+
+Inject the instance of service to another service
+-------------------------------------------------
+- Add the service in the provider array of AppModule
+- Add the @Injectable() decorator to the service which needs another service injected into itself
+- Get the service's instance via. constructor Injection

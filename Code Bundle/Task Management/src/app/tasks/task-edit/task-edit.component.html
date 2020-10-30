@@ -1,0 +1,29 @@
+<form>
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="name"
+      name="name"
+      [(ngModel)]="task.name"
+      required>
+  </div>
+  <div class="form-group">
+    <label for="status">Status</label>
+    <select class="form-control" name="status" id="status" [(ngModel)]="task.status">
+      <option *ngFor="let status of validStatus">{{ status }}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <textarea
+      [(ngModel)]="task.description"
+      class="form-control"
+      name="description"
+      id="description"
+      rows="4"
+      required></textarea>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="onEdit()">Save</button>
+</form>

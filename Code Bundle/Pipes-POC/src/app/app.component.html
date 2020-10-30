@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <input type="text" class="form-control" placeholder="Search Server" [(ngModel)]="searchText">
+      <button
+        (click)="onNewServer()"
+        class="btn btn-primary btn-new-server">
+        New Server
+      </button>
+      <hr>
+      <h4>Application Status: {{ appStatus | async | uppercase }}</h4>
+      <div class="row">
+        <div class="col-12 sort-buttons-group">
+          <button class="btn btn-primary" type="button" (click)="sortBy('name')">
+            Sort By Server Name
+          </button>
+          <button class="btn btn-primary" type="button" (click)="sortBy('instanceType')">
+            Sort By Instance Type
+          </button>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class="col-12">
+      <ul class="list-group">
+        <li
+          class="list-group-item"
+          *ngFor="
+            let server of servers | filter:searchText?.toLowerCase():'status' | sort:sortKey
+          "
+          [ngClass]="getStatusClasses(server)">
+          <strong>{{ server.name }}</strong> | 
+          {{ server.instanceType | uppercase | reverse }} | 
+          {{ server.startedAt | date:'fullDate' }}
+          <span class="badge badge-secondary badge-pill">
+            {{ server.status }}
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

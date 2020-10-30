@@ -1,0 +1,14 @@
+section.row { padding: 3rem 0; }
+app-gallery-item { display: flex; }
+
+.card-holder {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+h1 {
+  margin-bottom: 3rem;
+  font-size: 2.1rem;
+}
+
+.card-holder { margin-bottom: 2rem; }

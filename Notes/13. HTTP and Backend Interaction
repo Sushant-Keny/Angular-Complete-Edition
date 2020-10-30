@@ -1,0 +1,326 @@
+HTTP and Backend Interaction
+============================
+
+Introduction
+------------
+- HTTP is used for accessing the database and business logic
+- HTTP is one of the most important feature in the web application
+
+
+How to use HTTP in the Angular application
+-------------------------------------------
+- Import 'HttpClientModule' in the AppModule's imports array
+- Use constructor injection to inject HttpClient and use it anywhere
+
+
+HTTP POST
+---------
+- Use: httpClient.post(<<URL>>, <<request_body>>)
+- httpClient.post method returns an observable
+- You must subscribe to the observable to make the httpClient actually send the request
+- The data handler of the observable will give the response once observable emits it
+- Remember if you don't subscribe to the observable then it won't initiate the HTTP request as it knows no one has subscribed to it that means no one is interested in the response
+
+Note: Always use observable operators from Rxjs to transform the data inside a pipe function of the observable. Pipe function also returns an observable on which we can subscribe to and get the transformed data
+
+Remember all the methods of HTTPClient are generic so you can set the type while accessing the method
+
+Example:
+
+  this.httpClient.get<{ [key: string]: Post }>('https://angular-complete-guide-68a76.firebaseio.com/posts.json')
+    .pipe(
+      map((response) => {
+        const posts: Post[] = [];
+
+        for (const key in response) {
+          if (response.hasOwnProperty(key)) {
+            posts.push({ ...response[key], id: key });
+          }
+        }
+
+        return posts;
+      })
+    )
+    .subscribe((posts: Post[]) => {
+      console.log(posts);
+    });
+
+
+Rxjs 'catchError' operator
+--------------------------
+- Sometimes you might need to send the error to the analytics server to log the error
+- So a perfect place to do that operation of sending request to the analytics server would be catchError operator of Rxjs
+- Example:
+
+  const errorOccured = new Subject<string>();
+  const postsFetched = new Subject<Post[]>();
+
+  httpClient.get<{ [key: string]: Post }>('http://api.mediflex.com/posts')
+    .pipe(
+      map((response) => {
+        const posts: Post[] = [];
+        
+        for (const key in response) {
+          posts.push({ ...response, id: key })
+        }
+
+        return posts;
+      }),
+      catchError((error) => {
+        // Send data to the analytics server
+        return throwError(error);
+      })
+    )
+    .subscribe(
+      (posts: Post[]) => {
+        this.postsFetched.next(posts);
+      },
+      (error) => {
+        this.errorOccured.next(error.message);
+      },
+    );
+
+
+Sending headers and query params
+--------------------------------
+
+  let params: HttpParams = new HttpParams();
+
+  params = params.append('page', '1');
+  params = params.append('offset', '10');
+
+  const observable: Observable<Post[]> = this.httpClient
+    .get<{ [key: string]: Post }>(
+      'https://angular-complete-guide-68a76.firebaseio.com/posts.json',
+      {
+        headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
+        params
+        // params: new HttpParams().set('page', '1')
+      }
+    );
+
+
+Note: By default you get the response body in the data hook of the observable. But if you need any special control over response statusCode or response headers we can get the whole response than just body.
+We just have to add one more parameter
+
+  const observable: Observable<Post[]> = this.httpClient
+    .get<{ [key: string]: Post }>(
+      'https://angular-complete-guide-68a76.firebaseio.com/posts.json',
+      {
+        headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
+        params
+        observe: 'response'/'body'/'events'
+      }
+    );
+
+If you wanna watch response status like it's in progress/sent/uploaded if any file and many more then you can observe events
+Events give you response type and entire http response.
+We can use events with tap operator of observable as it doesn't change any response it only allows us to use to response and do something but not to change the response, so we can use tap operator to play with events
+
+Remember tap operator's callback will always get events in the parameter
+
+Example:
+
+  deletePosts() {
+    const observable: Observable<any> =
+      this.httpClient.delete('https://angular-complete-guide-68a76.firebaseio.com/posts.json', {
+        observe: 'events'
+      })
+      .pipe(
+        tap((event) => {
+          switch (event.type) {
+            case HttpEventType.Response:
+              console.log(event.body);
+              break;
+
+            case HttpEventType.Sent:
+              console.log(event.type);
+              break;
+
+            default:
+              console.log(event);
+              break;
+          }
+        })
+      );
+
+    return observable;
+  }
+
+HttpEventType is an enum which has all the event type mapped to the readable text like Sent, Response, etc
+
+You can also change the response type, so that Angular will act accordingly. For example, if you're receiving a blob then you can change the response type.
+Default responseType is 'json'
+
+Example:
+
+  this.httpClient.get('http://api.mediflex.com/image/1', {
+    observe: 'body',
+    responseType: 'blob'
+  })
+  .subscribe((blob) => {
+    // Do something with blob
+  }));
+
+
+Interceptors
+------------
+- Interceptor runs before the request leaves from the application
+- This is used whenever you wanna add common headers in every request, so the ideal way is to make this headers attachment common rather than sending headers in every request
+- So in such cases we can use Interceptors
+- Interceptor is a kind of service which could be provided by the AppModule
+- Classic example of Interceptor is creating an Auth interceptor where we add authorization headers for the request
+- Example:
+
+  Creating an Interceptor
+  -----------------------
+  i. Create a class and implement HttpInterceptor interface
+
+  export class AuthInterceptorService implements HttpInterceptor {  }
+
+  ii. HttpInterceptor interface will force us to implement intercept method
+
+  export class AuthInterceptorService implements HttpInterceptor {
+    intercept(req: HttpRequest<any>, next: HttpHandler) {
+      // Do something
+    }
+  }
+
+  iii. It's very important to call the handle method of next parameter to continue to request otherwise it will get hang up in the interceptor only
+
+  export class AuthInterceptorService implements HttpInterceptor {
+    intercept(req: HttpRequest<any>, next: HttpHandler) {
+      console.log('Request is on its way');
+      return next.handle(req);
+    }
+  }
+
+  iv. Now interceptor is provided in a special way because Angular uses the interceptor from these services which our module provides, so Angular must properly recognize the interceptor service and use it when it sends the request
+
+  @Module({
+    providers: [
+      {
+        provide: HTTP_INTERCEPTORS, // This tells Angular that it's an Interceptor
+        useClass: AuthInterceptorService,
+        multi: true, // This will make sure to execute both the interceptors if there are many interceptors
+      }
+    ]
+  })
+  export class AppModule {  }
+
+
+  Modifying the request in interceptor
+  ------------------------------------
+  - Request object we get in the interceptor is immutable
+  - We need to create a new request for that
+  - So clone() method of request comes to rescue
+  - Example:
+
+  import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
+
+  export class AuthInterceptorService implements HttpInterceptor {
+    public intercept(req: HttpRequest<any>, next: HttpHandler) {
+      console.log('Request is on its way');
+
+      const modifiedRequest: HttpRequest<any> = req.clone({
+        headers: req.headers.append('API-Key', 'xyz')
+      });
+
+      return next.handle(modifiedRequest);
+    }
+  }
+
+We can also add an interceptor in the response to do something for every response, for e.g. Log the response
+
+We can use response interceptor
+
+The next.handle(req) method of the intercept()'s parameter returns an observable which emits the response, so we can get the response there:
+
+Example:
+
+  import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
+  import { tap } from 'rxjs/operators';
+
+  export class AuthInterceptorService implements HttpInterceptor {
+    public intercept(req: HttpRequest<any>, next: HttpHandler) {
+      console.log('Request is on its way');
+
+      const modifiedRequest: HttpRequest<any> = req.clone({
+        headers: req.headers.append('API-Key', 'xyz')
+      });
+
+      return next.handle(modifiedRequest)
+        .pipe(
+          tap((event) => {
+            console.log(event);
+          })
+        );
+    }
+  }
+
+
+We can use multiple interceptors too
+
+Example: One for Auth and another one for logging
+
+  1. AuthInterceptorService
+
+  import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
+  import { tap } from 'rxjs/operators';
+
+  export class AuthInterceptorService implements HttpInterceptor {
+    public intercept(req: HttpRequest<any>, next: HttpHandler) {
+      console.log('Request is on its way');
+
+      const modifiedRequest: HttpRequest<any> = req.clone({
+        headers: req.headers.append('API-Key', 'xyz')
+      });
+
+      return next.handle(modifiedRequest);
+    }
+  }
+
+  2. LoggingInterceptorService
+
+  import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpEventType } from '@angular/common/http';
+  import { Observable } from 'rxjs';
+  import { tap } from 'rxjs/operators';
+
+  export class LoggingInterceptorService implements HttpInterceptor {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+      return next.handle(req)
+        .pipe(
+          tap((event) => {
+            if (event.type === HttpEventType.Response) {
+              console.log(event.body);
+            }
+          })
+        );
+    }
+  }
+
+  3. Provide it in AppModule
+
+  @Module({
+    providers: [
+      {
+        provide: HTTP_INTERCEPTORS,
+        useClass: AuthInterceptorService,
+        multi: true
+      },
+      {
+        provide: HTTP_INTERCEPTORS,
+        useClass: LoggingInterceptorService,
+        multi: true
+      }
+    ]
+  })
+  export class AppModule {  }
+
+
+  Remember the order of the interceptors provided in AppModule matters
+
+Useful resources: https://angular.io/guide/http
+
+
+Note: Error handling should always be done using catchError operator of rxjs and throwError object of rxjs

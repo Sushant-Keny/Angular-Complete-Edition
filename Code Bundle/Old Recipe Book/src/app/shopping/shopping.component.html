@@ -1,0 +1,15 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-4">Shopping</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-7">
+      <app-shopping-edit (ingredientAdded)="onIngredientAdded($event)"></app-shopping-edit>
+    </div>
+    <div class="col-5">
+      <app-shopping-list [ingredient]="ingredient"></app-shopping-list>
+    </div>
+  </div>
+</section>

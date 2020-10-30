@@ -1,0 +1,23 @@
+<form>
+  <div class="form-group">
+    <label for="accountNameInput">Account Name</label>
+    <input 
+    type="text"
+    name="accountName"
+    id="accountNameInput"
+    class="form-control"
+    #accountName
+    autocomplete="off"
+    aria-describedby="accountName">
+  </div>
+  <div class="form-group">
+    <label for="accountTypeSelect">Account Type</label>
+    <select id="accountType" class="form-control" id="accountTypeSelect" #accountStatus>
+      <option selected disabled="disabled" style="display: none;">Choose...</option>
+      <option>Active</option>
+      <option>In-Active</option>
+      <option>Unknown</option>
+    </select>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="onCreateAccount()">Add Account</button>
+</form>

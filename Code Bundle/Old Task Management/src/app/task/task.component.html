@@ -1,0 +1,8 @@
+<div class="row">
+  <div class="col-6">
+    <app-create-task (taskCreated)="onTaskCreated($event)"></app-create-task>
+  </div>
+  <div class="col-6">
+    <app-task-list [tasks]="taskList"></app-task-list>
+  </div>
+</div>

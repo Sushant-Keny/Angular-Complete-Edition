@@ -1,0 +1,6 @@
+h1 { 
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.col-12:nth-child(2) { margin-bottom: 30px; }

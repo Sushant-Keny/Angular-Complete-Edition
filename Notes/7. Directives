@@ -1,0 +1,144 @@
+Deep dive into Angular Directives
+---------------------------------
+
+There are two types of directives in Angular:
+i. Attribute Directives
+ii. Structural Directives
+
+----------------------------------------------------------------------------------------------------------------------------------
+Attribute Directives                                    |    Structural Directives                                               |
+----------------------------------------------------------------------------------------------------------------------------------
+i. Looks like normal HTML Attribute                     |    i. Looks like normal HTML Attribute but                             |
+   (Possibly with data binding or event binding)        |       having a leading * (for desugaring)                              |
+ii. Only affect/change the element they are added to    |    ii. Affect the whole area in the DOM, elements are added or removed |
+----------------------------------------------------------------------------------------------------------------------------------
+
+Directives
+----------
+- Directives are instructions to the DOM
+- They can change the DOM
+- Mostly we use Angular directives
+- There are structural, attribute directives
+- We can also create custom directives
+- Custom directives can be created using @Directive() decorator and selector property
+- Create custom directives using CLI: ng generate directive better-highlight
+
+import { Directive, ElementRef, Renderer2, OnInit } from '@angular/core';
+
+@Directive({
+  selector: '[appBetterHighlight]'
+})
+export class BetterHighlightDirective implements OnInit {
+  constructor(
+    private elementRef: ElementRef,
+    private renderer: Renderer2
+  ) { }
+
+  ngOnInit() {
+    this.renderer.setStyle(this.elementRef.nativeElement, 'backgroundColor', '#7474dd');
+  }
+}
+
+Later this directive need to be registered in the app.module.ts if you have created it manually without CLI
+
+Use the custom directive in the following way: <p appBetterHighlight>Try my basic better highlight directive</p>
+
+We should not directly change the DOM using native element as sometimes Angular might be used in service workers where we don't have access to the DOM at that time it might break the code.
+
+Hence use Renderer.
+
+Renderer: Renderer provides many out of the box methods to manipulate the DOM safely
+--------
+
+
+Host Listener
+-------------
+- @HostListener() decorator can be used above method to perform particular action on particular methods
+- Example:
+
+  @HostListener('mouseenter')
+  mouseOver(event: Event) {
+    this.renderer.setStyle(this.elementRef.nativeElement, 'backgroundColor', '#7474dd');
+  }
+
+  @HostListener('mouseleave')
+  mouseOver(event: Event) {
+    this.renderer.setStyle(this.elementRef.nativeElement, 'backgroundColor', 'transparent');
+  }
+
+
+Host binding
+------------
+- Instead of Renderer2 we can also use HostBinding to change the property of the element on which the directive sits on
+- Example: 
+
+  @Directive({
+    selector: '[appBetterHighlight]'
+  })
+  export class BetterHighlightDirective {
+    @HostBinding('style.backgroundColor') backgroundColor = 'transparent';
+    @HostBinding('style.cursor') cursor = 'pointer';
+
+    constructor() {}
+
+    @HostListener('mouseenter')
+    mouseOver(event: Event) {
+      this.backgroundColor = '#7474dd';
+    }
+
+    @HostListener('mouseleave')
+    mouseLeave(event: Event) {
+      this.backgroundColor = 'transparent';
+    }
+  }
+  
+- We can also get the values dynamically for the directives from the element itself using @Input() property binding
+- Example:
+
+  <p appBetterHighlight [defaultColor]="'transparent'" [highlightColor]="'dodgerBlue'">Try my basic better highlight directive</p>
+
+  @Input() defaultColor = 'transparent'; // This is default can be overridden if passed from element
+  @Input() highlightColor = '#7474dd'; // This is default can be overridden if passed from element
+
+
+Structural Directives
+---------------------
+- Why we write * before any structural directive?
+  * There is no special syntax with *
+  * But it tells angular to render that in an <ng-template>
+  * <ng-template> is not rendered in the DOM by the Angular, but it can be rendered depending on you specifying the proper condition to render it
+- Example:
+
+1. <div *ngIf="number > 2">{{ number }} is greater than 2</div>
+
+2. <ng-template [ngIf]="number > 2">{{ number }} is greater than 2</ng-template>
+
+Statment 1 is converted into statement 2 by the Angular after looking at the star
+In the end, both statements are same
+
+Create a structural directive using TemplateRef, ViewContainerRef & setter property named as the directive selector
+
+e.g.
+
+<p *appUnless="data === false">This will be displayed</p>
+
+@Directive({
+  selector: '[appUnless]'
+})
+export class AppUnlessDirective {
+  constructor(
+    private templateRef: TemplateRef<any>,
+    private vcRef: ViewContainerRef
+  ) {}
+
+  @Input()
+  set appUnless(condition: boolean) {
+    if (!condition) {
+      this.vcRef.createEmbeddedView(templateRef);
+    } else {
+      this.vcRef.clear();
+    }
+  }
+}
+
+Now <p> will be displayed unless the data is false

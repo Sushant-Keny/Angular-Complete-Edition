@@ -1,0 +1,16 @@
+<!-- Recipe -->
+<div>
+  <a
+    [routerLink]="[recipe.id]"
+    routerLinkActive="active"
+    class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between">
+      <div class="text-wrapper">
+        <h5>{{ recipe.name }}</h5>
+        <p>{{ recipe.tagline }}</p>
+      </div>
+      <img [src]="recipe.imageUrl" alt="{{ recipe.name }}" class="img-responsive"
+        style="min-width: 120px; max-width: 120px;">
+    </div>
+  </a>
+</div>

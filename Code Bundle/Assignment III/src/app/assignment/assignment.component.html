@@ -1,0 +1,41 @@
+<div class="container">
+	<div class="jumbotron">
+		<div class="row">
+			<div class="col-xl-12">
+				<h1 class="display-4">Assignment III</h1>
+				<hr>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xl-6 assignment-description">
+				<span class="lead">Description</span>
+
+				<ul>
+					<li class="lead">Add a button which says 'Display Details'</li>
+					<li class="lead">Add a paragraph of any content of your choice</li>
+				</ul>
+			</div>
+			<div class="col-xl-6">
+				<span class="lead">Logs</span>
+				<hr>
+				<div class="log-container">
+					<!-- <div class="lead" *ngFor="let log of logs">
+						<span *ngIf="log.counter > 4" [ngClass]="{ white: true }" [ngStyle]="{ backgroundColor: '#007bff' }">{{ log.timestamp }}</span>
+						<span *ngIf="log.counter < 4">{{ log.timestamp }}</span>
+					</div> -->
+					<span *ngFor="let log of logs" [ngClass]="{ white: log.counter >= 2 }" [ngStyle]="{ backgroundColor: log.counter >= 2 ? 'blue' : 'transparent' }">{{ log.timestamp }}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<button type="button" class="btn btn-info btn-block" (click)="onToggleDisplay()">Display Details</button>
+
+	<p class="text-details" *ngIf="displayParagraph">
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+		magna
+		aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat.
+		Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+		sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+</div>

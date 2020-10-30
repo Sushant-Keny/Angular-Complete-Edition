@@ -1,0 +1,15 @@
+.btn-suggestion { margin-top: 1rem; }
+.capitalize { text-transform: capitalize; }
+
+input.ng-invalid.ng-touched {
+  color: #495057;
+    background-color: #fff;
+    border-color: rgb(250, 0, 0);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 43, 0.25);
+}
+
+.span-validation {
+  display: block;
+  color: rgb(250, 0, 0);
+}
