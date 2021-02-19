@@ -207,7 +207,3 @@ Steps to achieve the authentication and state management
   If the canActivate method gets true then it's successful if false means the User is not Authenticated and must be redirected to Auth page
   So in this case we can inject the router and redirect the User or use URLTree which is specially made for redirection
   Now add the guard in canActivate property and that's it for the routing
-
-
-
-
