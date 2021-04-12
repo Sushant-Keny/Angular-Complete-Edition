@@ -16,7 +16,7 @@ Components are important!
 - Components are wired up/composed in App component
 - For. e.g. Navigation can be a component, Nav Link can be an another component, other components could be Side Bar, Slider, Alert etc.
 - This makes the code very maintainable, re-usable
-- Consider a car, if a car is made up of single component if anything happens to the car, we would have to fix/change entire car. As the car is desgined with multiple components, we can change the mirror if the mirror is damaged, tire if the tire is damaged.
+- Consider a car, if a car is made up of single component if anything happens to the car, we would have to fix/change entire car. As the car is designed with multiple components, we can change the mirror if the mirror is damaged, tire if the tire is damaged.
 
 
 Creating a new Component

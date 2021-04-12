@@ -46,7 +46,7 @@ Project Structure
 
 * Data binding
 --------------
-- Data can be binded to any tag using {{<<variable name of the component.ts>>}} syntax
+- We can bind the data to any tag using {{<<variable name of the component.ts>>}} syntax
 - If you want to bind or send data from html to component we have to use ngModel directive provided by Angular
 - We cannot directly use [(ngModel)] because it's unknown for Angular
 - So we have to import a package named @angular/forms which provides FormsModule which further provides ngModel directive in the app.module.ts which has everything a component needs

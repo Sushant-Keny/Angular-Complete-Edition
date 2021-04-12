@@ -8,14 +8,14 @@ What is an Observable?
 - Angular embraces Observables
 - Observables have some advantages over other patterns of handling asynchronous operations for e.g. Operators
 - Observable is attached to a data source and it can emit the data packages through a stream
-- Observales can be customized too
+- Observables can be customized too
 - Examples of Observables: User Input, Events, HTTP Request, Route Objects, triggered in the code
 - Observables have observer i.e. your subscribe function
 - There are three hooks for observer:
   i. Handle data
   ii. Handle error
   iii. Handle completion:
-    * Some observables don't get completed for e.g. Obeservable which gets emitted on a User Click
+    * Some observables don't get completed for e.g. Observable which gets emitted on a User Click
     * While some observables get completed for e.g. HTTP request observable gets completed once we get the response
 - Observable emits the data packages in chunks
 
@@ -24,7 +24,7 @@ Interval - RxJs
 -------------------
 - When we call interval method of RxJs it returns in observable
 - This observable emits the sequential numbers once subscribed
-- Unlike Route's params observable the interval observable should be unsubscribed as it's not done at the component descruction by the Angular. Hence we need to do it on our own
+- Unlike Route's params observable the interval observable should be unsubscribed as it's not done at the component destruction by the Angular. Hence we need to do it on our own
 - So whenever you create a custom Observable make sure you unsubscribe it in onDestroy() hook of the component
 
 
@@ -55,7 +55,7 @@ Create custom observable
 
 Hooks of observable
 -------------------
-- data: This hook is called when observable calls observer.next(data) method
+- next i.e. data: This hook is called when observable calls observer.next(data) method
 - error: This hook is called when observable calls observer.error(new Error('')) method
 - complete: This hook is called when observable calls observer.complete() method
 

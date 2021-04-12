@@ -73,7 +73,7 @@ We can also get the local reference of the ngContent using @ContentChild()
 Life Cycle Hooks of Angular
 ---------------------------
 - Whenever a component is created by Angular i.e. Whenever the Angular founds the selector used somewhere it creates the component to be rendered on the front end
-- Angular goes through some lifecycles while doing this
+- Angular goes through some lifecycle while doing this
 - It provides us multiple hooks of the lifecycle where we can execute some code on particular lifecycle phase
 
 - Phases

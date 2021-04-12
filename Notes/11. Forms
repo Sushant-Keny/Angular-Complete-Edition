@@ -36,7 +36,7 @@ Two Approaches of Forms
 Template driven forms
 ---------------------
 - Create a normal form with input, labels and button
-- Don't keep form's action attribute because it will trigger the default behaviour of submitting the form to the server
+- Don't keep form's action attribute because it will trigger the default behavior of submitting the form to the server
 - Angular form's module by default identifies the form with the form tag selector
 - Behind the scenes the form is a directive with tag selector, so Angular knows about the form
 - But the Angular doesn't know about the inputs because this functionality has a lot of different scenarios and hence it was not done by default
@@ -215,7 +215,7 @@ Form Reset
 
 Reactive Forms
 --------------
-- Reactive forms are the forms handled programatically so we first create the basic HTML structure and then jump rights into the typescript file
+- Reactive forms are the forms handled programmatically so we first create the basic HTML structure and then jump right into the typescript file
 - Instead of FormsModule, reactive forms require ReactiveFormsModule imported in our AppModule
 - Then we create a variable of type FormGroup in the typescript, previously we used NgForm which wraps all the inputs and returns an object but behind the scenes NgForm also had FormGroup inside it, and at the end, form is also a group of all the other input elements. Hence we would need FormGroup
 
@@ -262,7 +262,7 @@ FormGroup
 
 Validators
 ----------
-- In the template driven forms we configure the form in the template itself like the properties, name of the properties, validations, local referrences and many more
+- In the template driven forms we configure the form in the template itself like the properties, name of the properties, validations, local references and many more
 - But remember in reactive forms we don't configure the form in template but in typescript file, we just sync them to the template but the configuration is done in the typescript file only
 - That's the reason our FormControl takes multiple arguments so that we can pass default value and validators
 - Let's add the validators
@@ -297,7 +297,7 @@ Grouping inputs
   Suppose you wanna group below email and username in userData
   
   signUpForm = new FormGroup({
-    email: new FormControl(null, [Valitors.email, Validators.required]),
+    email: new FormControl(null, [Validators.email, Validators.required]),
     username: new FormControl(null, Validators.required),
     gender: new FormControl('male')
   });
@@ -306,7 +306,7 @@ Grouping inputs
 
   signUpForm = new FormGroup({
     userData: new FormGroup({
-      email: new FormControl(null, [Valitors.email, Validators.required]),
+      email: new FormControl(null, [Validators.email, Validators.required]),
       username: new FormControl(null, Validators.required),
     }),
     gender: new FormControl('male')

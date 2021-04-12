@@ -58,7 +58,7 @@ Now the RecipeModule will only get loaded once the recipes routes is accessed
 Important Notes:
 - Once you load a module lazily then remove the imports from the AppModule, imports in the AppModule tells Angular to load a module eagerly
 - You can only declare Component/Directive/Pipe once in any module, you cannot declare it in multiple modules
-- Donot optimize and lazy load the module which is always used otherwise it will create more delay
+- Do not optimize and lazy load the module which is always used otherwise it will create more delay
 
 
 Pre-lazy Loading

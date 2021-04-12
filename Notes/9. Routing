@@ -71,7 +71,7 @@ So to accept the params in this case we have to use observables which observes t
 So we can change the parameters using route.params in the typescript file
 
 E.g. 
-  this.paramsSubscription = router.params.subscribe((params) => {
+  this.paramsSubscription = route.params.subscribe((params) => {
     this.user.id = params['id'];
     this.user.name = params['name'];
   });
